@@ -5,12 +5,12 @@ Proyecto de desarrollo de aplicaciones web (PRW) del grupo D de 2ºDAW 2024-2025
 ## ToDo and README
 
 > [!IMPORTANT]
-> Please, read carefully the READMEs and ToDos in root project, frontend and backend. There can
-> be found instructions, troubleshooting steps and overall project features.
+> Please, read carefully the READMEs and ToDos in root project, frontend and backend.
+> These contain important instructions, troubleshooting steps, and an overview of the project's features.
 
 ## Main branch
 
-Main branch should be a functional version of the project, in terms of basic features and,
+The `main` branch should be a functional version of the project, in terms of basic features and,
 more over, project structure. This means that the main branch should always be deployable
 and functional, no matter what development stage the project is.
 
@@ -19,10 +19,10 @@ and functional, no matter what development stage the project is.
 ### Prerequisites
 
 Ensure you have the following software installed:
-#### Global
+#### Global Requirements
 - [Docker](https://docs.docker.com/get-docker/)
 - [VSCode DevContainers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-#### Windows specific
+#### Windows-Specific Requirements
 - [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 
 ### Setup Instructions
@@ -40,16 +40,16 @@ Ensure you have the following software installed:
 > ```bash
 > wsl
 > ```
-> We recommend using a WSL distro, such as Ubuntu or Devian, that is ready for developing,
-> having tools such as git command. Otherwise, it will be up to your discretion what to do
-> in order to follow the remaining steps.
+> We recommend using a WSL distribution such as Ubuntu or Debian,
+> which includes essential development tools like git.
+> Otherwise, you will need to set up your environment accordingly.
 
 > [!WARNING]
 > #### MacOS
-> MacOS platform hasn't been tested yet, thus unknown behavier is to be expected.
+> MacOS platform hasn't been tested yet, thus unknown behavior is to be expected.
 >
-> As because MacOS doesn't have WSL nor use Inotify, but fswatch, a solution for
-> possible issues hasn't been proposed yet.
+> Since macOS does not support WSL and uses `fswatch` instead of `inotify`,
+> no workaround for potential issues has been proposed yet.
 
 Use this to clone the repo.
    ```bash
@@ -96,9 +96,9 @@ a DevContainer and have a view of the root project (not in developing environmen
 
 To do this, there are two ways. You could use the command (command palette)
 `>Dev Containers: Reopen Folder Locally`. The downside of using this is that is not
-fully compatible with WSL environment. This means that, when executed, it'll attepmt
+fully compatible with WSL environment. This means that, when executed, it'll attempt
 to open the cloned project but in native Windows Filesystemt. So you will have to
-manually open it again using WSL. For that reason, we prefere to open it directly
+manually open it again using WSL. For that reason, we prefer to open it directly
 using the command (command palette) `>File: Open Recent...`.
 
 > [!TIP]
