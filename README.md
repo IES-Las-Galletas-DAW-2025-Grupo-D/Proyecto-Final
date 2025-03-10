@@ -126,4 +126,4 @@ using the command (command palette) `>File: Open Recent...`.
      ```powershell
      netsh interface ipv4 show excludedPortRange protocol=tcp
      ```
-     _Of course, Windows making trouble with no reason..._
+     _Of course, Windows making trouble for no reason..._
