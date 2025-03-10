@@ -86,8 +86,8 @@ the command (command palette) `>Dev Containers. Switch Container`. That easy!
 
 > [!TIP]
 > You can have both backend and frontend environments opened at once. To do this,
-> simply open a new VSCode (command palette) `>New Window`, and then to the normal
-> steps you'd to open the cloned project and a DevContainer.
+> simply open a new VSCode (command palette) `>New Window`, and then do the normal
+> steps you'd do to open the cloned project and a DevContainer.
 
 ### Return to the root folder
 
@@ -104,3 +104,26 @@ using the command (command palette) `>File: Open Recent...`.
 > [!TIP]
 > If you feel lost, remember that you can always open again WSL and manually navigate
 > to the project folder (where you cloned it) and execute `code .`.
+
+## Troubleshooting
+
+- **Docker Issues**: If you encounter any issues with Docker and port bindings, try the following:
+
+  1. **Port Already in Use**: Check if the required ports (3000, 8000, 3306) are already in use.
+     ```cmd
+     netstat -aon | findstr "3000 8000 3306"
+     ```
+     Kill the processes using the ports (replace `PID` with the actual process ID).
+     ```cmd
+     taskkill /F /PID [PID]
+     ```
+  2. **Reset WinNAT**: Try resetting the WinNAT network using privileged PowerShell.
+     ```powershell
+     net stop winnat
+     net start winnat
+     ```
+     You can check the excluded port range of WinNAT, to make sure it was the issue.
+     ```powershell
+     netsh interface ipv4 show excludedPortRange protocol=tcp
+     ```
+     _Of course, Windows making trouble with no reason..._
