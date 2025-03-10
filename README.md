@@ -45,6 +45,12 @@ Ensure you have the following software installed:
 > Otherwise, you will need to set up your environment accordingly.
 
 > [!WARNING]
+> #### Docker Desktop and WSL
+> When using WSL and Docker Desktop, is important to **turn on distro integration** within Docker Desktop.
+> To do this, simply navigate to `Settings > Resources > WSL Integration` inside Docker Desktop App.
+> Once there, turn on integration for the distro you've cloned the project.
+
+> [!WARNING]
 > #### MacOS
 > MacOS platform hasn't been tested yet, thus unknown behavior is to be expected.
 >
