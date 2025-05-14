@@ -1,7 +1,12 @@
 import { Link } from "react-router";
 
-export function Header() {
+interface DefaultLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function DefaultLayout({ children }: DefaultLayoutProps) {
   return (
+    <>
     <header className="flex justify-between items-center mb-16">
       <div className="animate-fadeIn">
         <h2 className="text-xl font-semibold tracking-tight text-indigo-400">
@@ -25,5 +30,8 @@ export function Header() {
         </div>
       </div>
     </header>
+
+    <main>{children}</main>
+    </>
   );
 }

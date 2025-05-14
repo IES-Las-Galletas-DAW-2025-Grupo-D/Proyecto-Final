@@ -1,48 +1,25 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../../providers/AuthProvider";
 import { Navigate } from "react-router";
-import { login as loginService } from "../../services/LoginService";
 
-export function LoginForm() {
+export function SignupForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // const auth = useAuth();
 
-  // if (auth.isAuthenticated) {
-  //   return <Navigate to="/dashboard" />;
-  // }
+  const auth = useAuth();
 
-//e: React.FormEvent
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username && password) {
-      const response = await loginService({
-        usernameOrEmail: username,
-        password: password,
-    });
-    if (response) {
-      console.log("Login successful", response);
-      localStorage.setItem("token", response.token);
-      return <Navigate to="/dashboard" />;
-      // return <Navigate to="/dashboard" />;
-    } else {
-      console.error("Login failed");
-    }
-    } else {
-      console.error("Input fields not found");
-      return;
-    }
-  };
+  if (auth.isAuthenticated) {
+    return <Navigate to="/dashboard" />;
+  }
   return (
     <>
     <div className="max-w-3xl mx-auto text-center mb-16">
       <h1 className="bg-gradient text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent animate-fadeIn delay-300 mb-6"
       style={{ backgroundClip: "text" }}>
-        Login
+        SignUp
       </h1>
-      <form onSubmit={handleLogin}>
+      <form action="">
         <label htmlFor="EmailOrUsername" className="italic font-medium">Nombre</label>
         <p>
           <input
