@@ -12,7 +12,7 @@ class WelcomePhraseController extends Controller
      */
     public function index()
     {
-        return response()->json(WelcomePhrase::all()->random());
+        return response()->json(WelcomePhrase::paginate());
     }
 
     /**
