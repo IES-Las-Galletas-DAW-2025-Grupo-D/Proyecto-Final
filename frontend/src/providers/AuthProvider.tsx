@@ -1,8 +1,9 @@
 import { createContext, useContext } from "react";
 import { useState } from "react";
+import { Outlet } from "react-router";
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const AuthContext = createContext({
@@ -14,6 +15,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   return (
     <AuthContext.Provider value={{ isAuthenticated }}>
       {children}
+      <Outlet />
     </AuthContext.Provider>
   );
 }
