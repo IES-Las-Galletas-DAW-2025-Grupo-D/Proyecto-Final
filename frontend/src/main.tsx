@@ -3,11 +3,20 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { App } from "./App";
 import { BrowserRouter } from "react-router";
+import { AuthProvider } from "./providers/AuthProvider";
+import DefaultLayout from "./layout/DefaultLayout";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+          <DefaultLayout>
+            <App/>
+            </DefaultLayout>
+      </BrowserRouter>
+    </AuthProvider>
+    {/* <BrowserRouter>
       <App />
-    </BrowserRouter>
+    </BrowserRouter> */}
   </StrictMode>
 );
