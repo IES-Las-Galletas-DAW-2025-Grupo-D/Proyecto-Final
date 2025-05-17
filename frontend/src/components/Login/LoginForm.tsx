@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../providers/AuthProvider";
 import { login as loginService } from "../../services/LoginService";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 
 export function LoginForm() {
@@ -39,14 +39,14 @@ export function LoginForm() {
         Login
       </h1>
       <form onSubmit={handleLogin}>
-        <label htmlFor="EmailOrUsername" className="italic font-medium">Nombre</label>
+        <label htmlFor="EmailOrUsername" className="italic font-medium">Nombre o Email</label>
         <p>
           <input
             type="text"
             id="EmailOrUsername"
             name="EmailOrUsername"
             className="border rounded-md p-2 mb-4"
-            placeholder="Dime tu nombre"
+            placeholder="Dime tu nombre o tu email "
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
@@ -65,7 +65,11 @@ export function LoginForm() {
           />
         </p>
 
-        <button className="px-6 py-3 border border-indigo-500/30 hover:bg-indigo-500/10 rounded-lg font-medium transition-all duration-200 inline-flex items-center">Login</button>
+        <button className="px-6 py-3 border  rounded-lg font-medium transition-all duration-200 inline-flex items-center">Entrar</button>
+        <p>¿No tienes cuenta?</p>
+        <p>
+          <Link to="/signup" className="text-xl font-semibold">Signup</Link>
+        </p>
       </form>
     </div>
     </>
