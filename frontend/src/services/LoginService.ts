@@ -1,7 +1,7 @@
 import { LoginRequest, LoginResponse } from "../types/user.types";
 
 export const login = async (params: LoginRequest) => {
-  const response = await fetch("https://36666632-8d59-4989-87d7-a0fc1fc32957.mock.pstmn.io/api/v1/login", {
+  const response = await fetch("/api/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
