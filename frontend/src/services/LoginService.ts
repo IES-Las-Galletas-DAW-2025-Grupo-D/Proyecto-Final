@@ -1,7 +1,7 @@
 import { LoginRequest, LoginResponse } from "../types/user.types";
 
 export const login = async (params: LoginRequest) => {
-  const response = await fetch("/api/login", {
+  const response = await fetch("http://127.0.0.1:8000/api/v1/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
