@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 import { useAuth } from "../../providers/AuthProvider";
-import { Navigate } from "react-router";
 import { login as loginService } from "../../services/LoginService";
+import { useNavigate } from "react-router";
+
 
 export function LoginForm() {
+  const { login } = useAuth();
+    const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // const auth = useAuth();
-
-  // if (auth.isAuthenticated) {
-  //   return <Navigate to="/dashboard" />;
-  // }
-
-//e: React.FormEvent
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,14 +18,14 @@ export function LoginForm() {
         usernameOrEmail: username,
         password: password,
     });
-    if (response) {
-      console.log("Login successful", response);
-      localStorage.setItem("token", response.token);
-      return <Navigate to="/dashboard" />;
-      // return <Navigate to="/dashboard" />;
-    } else {
-      console.error("Login failed");
-    }
+      if (response) {
+        console.log("Login successful", response);
+        localStorage.setItem("token", response.token);
+        login();
+        navigate("/dashboard");
+      } else {
+        console.error("Login failed");
+      }
     } else {
       console.error("Input fields not found");
       return;
@@ -38,7 +34,7 @@ export function LoginForm() {
   return (
     <>
     <div className="max-w-3xl mx-auto text-center mb-16">
-      <h1 className="bg-gradient text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent animate-fadeIn delay-300 mb-6"
+      <h1 className="bg-white text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent animate-fadeIn delay-300 mb-6"
       style={{ backgroundClip: "text" }}>
         Login
       </h1>
@@ -49,7 +45,7 @@ export function LoginForm() {
             type="text"
             id="EmailOrUsername"
             name="EmailOrUsername"
-            className="border border-gray-300 rounded-md p-2 mb-4"
+            className="border rounded-md p-2 mb-4"
             placeholder="Dime tu nombre"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -62,7 +58,7 @@ export function LoginForm() {
             type="password"
             id="password"
             name="password"
-            className="border border-gray-300 rounded-md p-2 mb-4"
+            className="border rounded-md p-2 mb-4"
             placeholder="Dime tu contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
