@@ -17,8 +17,10 @@ class EventController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $events = Event::where('user_id', $user->id)
-            ->orWhereRaw("JSON_CONTAINS(write_permissions, ?)", [$user->id])
+        $userId = $user->id;
+
+        $events = Event::where('user_id', $userId)
+            ->orWhereRaw("JSON_CONTAINS(write_permissions, CAST(? AS JSON))", [$userId])
             ->orderBy('created_at', 'desc')
             ->get();
 
