@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../../providers/AuthProvider";
 import { login as loginService } from "../../services/LoginService";
 import { Link, useNavigate } from "react-router";
 
 
 export function LoginForm() {
-  const { login } = useAuth();
-    const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,11 +24,17 @@ export function LoginForm() {
         usernameOrEmail: username,
         password: password,
     });
-      if (response) {
+      if (response?.token) {
         console.log("Login successful", response);
-        localStorage.setItem("token", response.token);
         login();
-        navigate("/dashboard");
+        if (rememberMe) {
+          localStorage.setItem("token", response.token); 
+          console.log("Token en localStorage:", localStorage.getItem("token"));
+        } else {
+          sessionStorage.setItem("token", response.token); 
+          console.log("Token en sessionStorage:", sessionStorage.getItem("token"));
+          
+        }
       } else {
         console.error("Login failed");
       }
@@ -33,7 +45,7 @@ export function LoginForm() {
   };
   return (
     <>
-    <div className="max-w-3xl mx-auto text-center mb-16">
+    <div className="max-w-3xl justify-center mx-auto text-center items-center mb-16">
       <h1 className="bg-white text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent animate-fadeIn delay-300 mb-6"
       style={{ backgroundClip: "text" }}>
         Login
@@ -63,6 +75,18 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        </p>
+
+        <p>
+          <label className="flex font-medium items-center space-x-2 mb-4 justify-center">
+            <input
+            className="text-center"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <span>Recuérdame</span>
+          </label>
         </p>
 
         <button className="px-6 py-3 border  rounded-lg font-medium transition-all duration-200 inline-flex items-center">Entrar</button>

@@ -1,6 +1,5 @@
-  import React from "react";
 import { useAuth } from "../../providers/AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
   // import { useNavigate } from "react-router";
 
 export function DashboardBody() {
@@ -8,8 +7,9 @@ export function DashboardBody() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();           // Cambia el estado a no autenticado
-    navigate("/login"); // Redirige al login
+    logout();
+    navigate("/login");  
+      // Redirige al login
   };
 
   return (

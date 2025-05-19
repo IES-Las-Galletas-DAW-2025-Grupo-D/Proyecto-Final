@@ -1,17 +1,28 @@
 import { useState } from "react";
-import { useAuth } from "../../providers/AuthProvider";
-import { Link, Navigate } from "react-router";
+import { Link } from "react-router";
+import { register } from "../../services/RegisterService";
+import { useNavigate } from "react-router";
 
 export function SignupForm() {
-  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-
-  const auth = useAuth();
-
-  if (auth.isAuthenticated) {
-    return <Navigate to="/dashboard" />;
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await register({ name, email, password });
+      alert("Usuario registrado con éxito");
+      navigate("/login");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert("Error: " + error.message);
+      } else {
+        alert("Ocurrió un error desconocido");
+      }
+    }
+  };
   return (
     <>
     <div className="max-w-3xl mx-auto text-center mb-16">
@@ -19,7 +30,7 @@ export function SignupForm() {
       style={{ backgroundClip: "text" }}>
         Regístrate
       </h1>
-      <form action="">
+      <form onSubmit={handleSubmit}>
         <label htmlFor="EmailOrUsername" className="italic font-medium">Correo Electronico</label>
         <p>
           <input
@@ -28,8 +39,8 @@ export function SignupForm() {
             name="EmailOrUsername"
             className="border border-gray-300 rounded-md p-2 mb-4"
             placeholder="Dime tu email"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </p>
 
@@ -42,8 +53,8 @@ export function SignupForm() {
             name="EmailOrUsername"
             className="border border-gray-300 rounded-md p-2 mb-4"
             placeholder="Dime tu nombre"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </p>
 
