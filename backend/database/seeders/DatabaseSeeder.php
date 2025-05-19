@@ -15,14 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             WelcomePhraseSeeder::class,
+            UserSeeder::class,
+            ProjectSeeder::class,
+            EventSeeder::class,
         ]);
 
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => '12345678aA@',
-        ]);
+      
     }
 }
