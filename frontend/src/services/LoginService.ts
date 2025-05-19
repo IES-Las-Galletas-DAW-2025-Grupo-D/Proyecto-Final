@@ -10,7 +10,6 @@ export const login = async (params: LoginRequest) => {
   });
 
   if (!response.ok) {
-    // Intenta obtener errores detallados si es un 422
     try {
       const errorData = await response.json();
       console.error("Validation errors:", errorData);

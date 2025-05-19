@@ -8,11 +8,12 @@ export function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password_confirmation, setPasswordConfirmation] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register({ name, email, password });
+      await register({ name, email, password, password_confirmation });
       alert("Usuario registrado con éxito");
       navigate("/login");
     } catch (error: unknown) {
@@ -26,7 +27,7 @@ export function SignupForm() {
   return (
     <>
     <div className="max-w-3xl mx-auto text-center mb-16">
-      <h1 className="bg-white text-5xl md:text-6xl font-bold tracking-tight bg-clip-text text-transparent animate-fadeIn delay-300 mb-6"
+      <h1 className="text-5xl md:text-6xl font-bold tracking-tight bg-clip-text animate-fadeIn delay-300 mb-6"
       style={{ backgroundClip: "text" }}>
         Regístrate
       </h1>
@@ -37,8 +38,8 @@ export function SignupForm() {
             type="text"
             id="EmailOrUsername"
             name="EmailOrUsername"
-            className="border border-gray-300 rounded-md p-2 mb-4"
-            placeholder="Dime tu email"
+            className="border rounded-md p-2 mb-4"
+            placeholder="Correo Electronico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -51,8 +52,8 @@ export function SignupForm() {
             type="text"
             id="EmailOrUsername"
             name="EmailOrUsername"
-            className="border border-gray-300 rounded-md p-2 mb-4"
-            placeholder="Dime tu nombre"
+            className="border rounded-md p-2 mb-4"
+            placeholder="Nombre"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -64,10 +65,23 @@ export function SignupForm() {
             type="password"
             id="password"
             name="password"
-            className="border border-gray-300 rounded-md p-2 mb-4"
-            placeholder="Dime tu contraseña"
+            className="border rounded-md p-2 mb-4"
+            placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+          />
+        </p>
+
+        <label htmlFor="passwordConfirmation" className="italic font-medium">Repetir Contraseña</label>
+        <p>
+          <input
+            type="passwordConfirmation"
+            id="passwordConfirmation"
+            name="passwordConfirmation"
+            className="border rounded-md p-2 mb-4"
+            placeholder="Repite la Contraseña"
+            value={password_confirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
           />
         </p>
 
