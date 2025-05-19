@@ -9,7 +9,7 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setPasswordConfirmation] = useState("");
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -24,6 +24,7 @@ export function SignupForm() {
       }
     }
   };
+
   return (
     <>
     <div className="max-w-3xl mx-auto text-center mb-16">
@@ -45,6 +46,10 @@ export function SignupForm() {
           />
         </p>
 
+        <dialog id="modal" className="modal">
+          <button id="closeModal" className="modal-close-btn">Close</button>
+            <p>...</p>
+        </dialog>
 
         <label htmlFor="EmailOrUsername" className="italic font-medium">Nombre</label>
         <p>
