@@ -29,17 +29,17 @@ class JwtAuthentication
         $token = $request->bearerToken();
 
         if (!$token) {
-            return response()->json(['error' => 'Token no proporcionado'], 401);
+            return response()->json(['error' => 'Token not provided'], 401);
         }
 
         if ($this->jwtService->isTokenExpired($token)) {
-            return response()->json(['error' => 'Token expirado'], 401);
+            return response()->json(['error' => 'Expired token'], 401);
         }
 
         $claims = $this->jwtService->getClaims($token);
-        
+
         if (!isset($claims['sub'])) {
-            return response()->json(['error' => 'Token inválido'], 401);
+            return response()->json(['error' => 'Invalid token'], 401);
         }
 
         $user = User::find($claims['sub']);
