@@ -10,7 +10,7 @@ export function App() {
   return (
     <Routes>
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="dashboard" element={<DashboardPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
