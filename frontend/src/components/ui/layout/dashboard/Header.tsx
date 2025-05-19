@@ -57,7 +57,10 @@ export function Header() {
 
       <div className="flex-1 p-4">
         <div className="mb-4">
-          <Link to={"/dashboard/projects"} className="btn btn-block justify-start gap-2 bg-primary/10 hover:bg-primary/20 text-primary mb-3">
+          <Link
+            to={"/dashboard/projects"}
+            className="btn btn-block justify-start gap-2 bg-primary/10 hover:bg-primary/20 text-primary mb-3"
+          >
             <FaFolder className="h-5 w-5" />
             Projects
           </Link>
@@ -90,7 +93,7 @@ export function Header() {
         <div className="divider my-2"></div>
 
         <div className="indicator w-full">
-          <span className="indicator-item indicator-top indicator-end badge badge-error text-xs p-2">
+          <span className="indicator-item indicator-top indicator-end badge badge-warning text-xs p-2">
             -10%
           </span>
           <button className="btn btn-block justify-center gap-2 bg-accent">
