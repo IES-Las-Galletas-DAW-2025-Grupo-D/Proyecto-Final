@@ -18,7 +18,7 @@ export function App() {
       <ThemeProvider>
         <Routes>
           <Route
-            index
+            path="/"
             element={
               <FullLayout>
                 <HomePage />
@@ -27,8 +27,18 @@ export function App() {
           />
 
           <Route element={<PublicOnlyRoute />}>
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/login" element={<LoginPage />} />
+            
+              <Route path="/signup" element={
+                <FullLayout>
+                <SignupPage />
+                </FullLayout>
+              } 
+              />
+              <Route path="/login" element={
+                <FullLayout>
+                <LoginPage />
+                </FullLayout>
+              } />
           </Route>
 
           <Route element={<PrivateRoute />}>

@@ -32,7 +32,6 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200">
       <div className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title text-2xl font-bold text-center">Login</h2>
@@ -103,13 +102,12 @@ export function LoginForm() {
           <div className="mt-4 text-center">
             <p>
               Don't have an account?
-              <Link to="/register" className="link link-primary ml-1">
+              <Link to="/signup" className="link link-primary ml-1">
                 Register here
               </Link>
             </p>
           </div>
         </div>
       </div>
-    </div>
   );
 }
