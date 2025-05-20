@@ -1,11 +1,16 @@
 import { Route, Routes } from "react-router";
 import { FullLayout } from "./components/ui/layout/full/FullLayout";
 import { HomePage } from "./Home/HomePage";
-import { DashboardPage } from "./pages/Dashboard/DashboardPage";
+import { DashboardPage } from "./pages/dashboard/DashboardPage";
 import { ThemeProvider } from "./providers/ThemeProvider";
-import { ProjectsListPage } from "./pages/Projects/ProjectsListPage";
+import { ProjectsListPage } from "./pages/projects/ProjectsListPage";
 import { DashboardLayout } from "./components/ui/layout/dashboard/DashboardLayout";
-import { ProjectPage } from "./pages/Projects/ProjectPage";
+import { ProjectPage } from "./pages/projects/ProjectPage";
+import { SignupPage } from "./pages/signup/SignupPage";
+import { LoginPage } from "./pages/login/LoginPage";
+import { NotFoundErrorPage } from "./pages/errors/NotFoundErrorPage";
+import { PrivateRoute } from "./components/routes/PrivateRoute";
+import { PublicOnlyRoute } from "./components/routes/PublicOnlyRoute";
 
 export function App() {
   return (
@@ -21,15 +26,24 @@ export function App() {
             }
           />
 
-          <Route path="dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="projects">
-              <Route index element={<ProjectsListPage />} />
-              <Route path=":projectId" element={<ProjectPage />} />
-            </Route>
-            <Route path="tasks" element={<DashboardPage />} />
-            <Route path="settings" element={<DashboardPage />} />
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
           </Route>
+
+          <Route element={<PrivateRoute />}>
+            <Route path="dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="projects">
+                <Route index element={<ProjectsListPage />} />
+                <Route path=":projectId" element={<ProjectPage />} />
+              </Route>
+              <Route path="tasks" element={<DashboardPage />} />
+              <Route path="settings" element={<DashboardPage />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<NotFoundErrorPage />} />
         </Routes>
       </ThemeProvider>
     </>
