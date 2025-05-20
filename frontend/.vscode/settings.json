@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["tailwindcss"],
+  "cSpell.words": ["Authorizate", "tailwindcss"],
   "github.copilot.chat.codeGeneration.instructions": [
     {
       "file": "./.vscode/daisyui.md"

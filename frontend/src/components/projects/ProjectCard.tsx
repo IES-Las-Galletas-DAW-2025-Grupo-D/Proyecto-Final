@@ -9,6 +9,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
       to={project.id.toString()}
+      state={{ project }}
       className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 cursor-pointer"
       role="button"
       tabIndex={0}
