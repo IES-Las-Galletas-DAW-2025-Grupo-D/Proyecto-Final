@@ -23,7 +23,7 @@ class ProjectController extends Controller
             ->orWhereRaw("JSON_CONTAINS(write_permissions, CAST(? AS JSON))", [$userId])
             ->orWhereRaw("JSON_CONTAINS(read_permissions, CAST(? AS JSON))", [$userId])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(6);
 
         return response()->json($projects);
     }
