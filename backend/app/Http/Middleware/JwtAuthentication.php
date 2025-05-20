@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Services\JwtService;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class JwtAuthentication
 {
@@ -28,27 +27,16 @@ class JwtAuthentication
     {
         $token = $request->bearerToken();
 
-        if (!$token) {
-            return response()->json(['error' => 'Token not provided'], 401);
+        // Use the service method for authentication
+        $result = $this->jwtService->authenticateWithToken($token);
+
+        // If authentication failed, return error response
+        if (!$result['success']) {
+            return response()->json(['error' => $result['error']], $result['code']);
         }
 
-        if ($this->jwtService->isTokenExpired($token)) {
-            return response()->json(['error' => 'Expired token'], 401);
-        }
-
-        $claims = $this->jwtService->getClaims($token);
-
-        if (!isset($claims['sub'])) {
-            return response()->json(['error' => 'Invalid token'], 401);
-        }
-
-        $user = User::find($claims['sub']);
-
-        if (!$user) {
-            return response()->json(['error' => 'Usuario no encontrado'], 401);
-        }
-
-        Auth::login($user);
+        // Login the user
+        Auth::login($result['user']);
 
         return $next($request);
     }
