@@ -2,12 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import { useTheme } from "../../../../providers/ThemeProvider";
 import { FaFolder, FaArrowUp, FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router";
+import { useAuth } from "../../../../providers/AuthProvider";
 
 export function Header() {
   const [width, setWidth] = useState(260);
   const [isDragging, setIsDragging] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
+  const auth = useAuth();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -36,6 +38,12 @@ export function Header() {
 
   const startResize = () => {
     setIsDragging(true);
+  };
+
+  const handleLogout = () => {
+    auth.logout();
+    // You might want to redirect the user to the login page here
+    // For example, using react-router: history.push('/login');
   };
 
   const toggleCurrentTheme = () => {
@@ -107,12 +115,21 @@ export function Header() {
         <div className="flex items-center gap-2">
           <div className="avatar">
             <div className="w-10 h-10 rounded-full">
-              <img src="https://picsum.photos/200/300" alt="User avatar" />
+              <img
+                src={
+                  auth.getUserName()
+                    ? `https://api.dicebear.com/9.x/initials/svg?seed=${auth.getUserName()}`
+                    : "https://picsum.photos/200/300"
+                }
+                alt="User avatar"
+              />
             </div>
           </div>
           <div className="overflow-hidden">
-            <p className="font-medium truncate">John Doe</p>
-            <p className="text-sm opacity-70 truncate">Administrator</p>
+            <p className="font-medium truncate">
+              {auth.getUserName() || "Guest User"}
+            </p>
+            <p className="text-sm opacity-70 truncate">Free Tier</p>
           </div>
           <div className="dropdown dropdown-top ml-auto">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-xs">
@@ -123,18 +140,30 @@ export function Header() {
               className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10"
             >
               <li>
-                <a>Profile</a>
+                <button className="btn btn-ghost btn-sm justify-start" disabled>
+                  Profile
+                </button>
               </li>
               <li>
-                <a>Settings</a>
+                <button className="btn btn-ghost btn-sm justify-start" disabled>
+                  Settings
+                </button>
               </li>
               <li>
-                <a onClick={toggleCurrentTheme}>
+                <button
+                  className="btn btn-ghost btn-sm justify-start"
+                  onClick={toggleCurrentTheme}
+                >
                   Switch to {theme === "light" ? "Dark" : "Light"} Mode
-                </a>
+                </button>
               </li>
               <li>
-                <a>Logout</a>
+                <button
+                  className="btn btn-ghost btn-sm justify-start"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
               </li>
             </ul>
           </div>

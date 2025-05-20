@@ -4,38 +4,45 @@ import { PaginatedResponse } from "../../types/paginated";
 import { Project } from "../../types/project";
 import { ProjectCard } from "./ProjectCard";
 import { FaTimesCircle } from "react-icons/fa";
+import { transferApiQueryParams } from "../../utils/api";
 
 export function ProjectsList() {
   const [projectsData, setProjectsData] =
     useState<PaginatedResponse<Project> | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProjects = async (url?: string) => {
-      try {
-        setLoading(true);
-        const data = await getProjects(url);
-        setProjectsData(data);
-        setError(null);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-        setProjectsData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    handlePageChange(window.location.search);
 
-    fetchProjects();
+    // const fetchProjects = async () => {
+    //   // try {
+    //   //   setLoading(true);
+    //   //   const data = await getProjects(queryParams.toString());
+    //   //   setProjectsData(data);
+    //   //   setError(null);
+    //   // } catch (err) {
+    //   //   setError(
+    //   //     err instanceof Error ? err.message : "An unknown error occurred"
+    //   //   );
+    //   //   setProjectsData(null);
+    //   // } finally {
+    //   //   setLoading(false);
+    //   // }
+    // };
+
+    // fetchProjects();
   }, []);
 
   const handlePageChange = async (url: string | null) => {
-    if (!url || loading) return;
+    if (loading) return;
     setLoading(true);
     try {
-      const data = await getProjects(url);
+      const newUrl = transferApiQueryParams(url, window.location.href);
+      if (newUrl !== window.location.href) {
+        window.history.replaceState({}, "", newUrl);
+      }
+      const data = await getProjects(url ?? undefined);
       setProjectsData(data);
       setError(null);
     } catch (err) {
