@@ -4,7 +4,7 @@ import { useAuth } from "../../providers/AuthProvider";
 
 export function LoginForm() {
   const { login } = useAuth();
-  const [usernameOrEmail, setUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,11 +13,11 @@ export function LoginForm() {
     e.preventDefault();
     setError("");
 
-    if (usernameOrEmail && password) {
+    if (username && password) {
       setIsLoading(true);
       try {
         await login({
-          usernameOrEmail,
+          username,
           password,
         });
       } catch (err) {
@@ -59,13 +59,13 @@ export function LoginForm() {
           <form onSubmit={handleLogin} className="mt-4 space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label">Username or Email</span>
+                <span className="label">Username</span>
               </label>
               <input
                 type="text"
-                placeholder="Enter your username or email"
+                placeholder="Enter your username"
                 className="input input-bordered w-full"
-                value={usernameOrEmail}
+                value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />

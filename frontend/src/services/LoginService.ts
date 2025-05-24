@@ -5,7 +5,7 @@ export const login = async (
   credentials: LoginRequest
 ): Promise<LoginResponse> => {
   try {
-    const response = await fetch(toApiUrl("/login"), {
+    const response = await fetch(toApiUrl("/auth/login"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -26,7 +26,7 @@ public class AuthController {
 		String token = authenticationService.login(loginDto);
 
 		AuthResponseDto authResponseDto = new AuthResponseDto();
-		authResponseDto.setAccessToken(token);
+		authResponseDto.setToken(token);
 
 		return ResponseEntity.ok(authResponseDto);
 	}
