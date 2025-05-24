@@ -2,13 +2,13 @@ package es.angelkrasimirov.timeweaver.dtos;
 
 public class AuthResponseDto {
 
-	private String accessToken;
+	private String token;
 
-	public String getAccessToken() {
-		return accessToken;
+	public String getToken() {
+		return token;
 	}
 
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+	public void setToken(String token) {
+		this.token = token;
 	}
 }
