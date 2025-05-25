@@ -8,7 +8,7 @@ export function ProjectsListPage() {
       <p className="text-base-content/70">
         Here you can manage your projects and tasks.
       </p>
-      <div className="divider my-6"></div>
+      <div className="divider my-4"></div>
       <ProjectsList />
     </Island>
   );

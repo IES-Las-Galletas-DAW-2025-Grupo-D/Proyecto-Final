@@ -1,8 +1,8 @@
 package es.angelkrasimirov.timeweaver.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import es.angelkrasimirov.timeweaver.models.Project;
@@ -13,12 +13,8 @@ public class ProjectService {
   @Autowired
   private ProjectRepository projectRepository;
 
-  public List<Project> getAllProjects() {
-    return projectRepository.findAll();
-  }
-
-  public List<Project> getProjectsByUserId(Long userId) {
-    return projectRepository.findByUserProjectRoles_User_Id(userId);
+  public Page<Project> getProjectsByUserId(Long userId, Pageable pageable) {
+    return projectRepository.findByUserProjectRoles_User_Id(userId, pageable);
   }
 
   public Project getProjectById(Long projectId) {
