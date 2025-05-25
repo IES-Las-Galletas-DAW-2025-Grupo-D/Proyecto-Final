@@ -1,4 +1,5 @@
 import { Header } from "./Header";
+import { Footer } from "./Footer"
 
 export function FullLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +13,7 @@ export function FullLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 }

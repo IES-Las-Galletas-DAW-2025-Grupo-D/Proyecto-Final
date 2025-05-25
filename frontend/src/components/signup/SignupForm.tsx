@@ -125,7 +125,7 @@ export function SignupForm() {
                 {isLoading ? (
                   <span className="loading loading-spinner"></span>
                 ) : (
-                  "Login"
+                  "Signup"
                 )}
               </button>
             </div>

@@ -11,8 +11,7 @@ export function HomePage() {
 
   return (
     <>
-      <p className="text-xl text-slate-300 animate-fadeIn delay-400 mb-8">
-        <div>
+        <div className="text-xl text-slate-300 animate-fadeIn delay-400 mb-8">
           <div className=" items-center  gap-8 animate-fadeIn delay-400">
             <div className="w-full text-center py-7 text-black">
                 <div className="flex justify-center items-center px-4">
@@ -29,7 +28,7 @@ export function HomePage() {
             <div className="text-center py-7"> 
               <p>
                 <h3 className="text-lg sm:text-3xl font-bold text-base-800">
-                  Organize your tasks and projects efficiently with TimeLines.
+                  Organize your tasks and projects efficiently with TimeWeaver.
                 </h3>
               </p>
             </div>
@@ -39,7 +38,6 @@ export function HomePage() {
               <Link to={""}  className="btn bg-neutral text-base-100 hover:bg-base-300 px-4 py-5 rounded-2xl transition duration-200 px-10 py-7 text-lg">See plans & pricing</Link>
             </div>
 
-            {/* Imagen debajo de la frase */}
             <div className="w-full px-10 py-10 pb-10">
               <img
                 src="/Proyecto.PNG"
@@ -53,57 +51,55 @@ export function HomePage() {
             <div className="max-w-7xl mx-auto">
               <h2 className="text-5xl font-bold text-center mb-16">Pricing Plans</h2>
               <div className="grid gap-10 grid-cols-1 md:grid-cols-3">
-                
+
                 {/* Free Plan */}
                 <div className="card bg-base-200 shadow-xl border border-base-300 text-neutral">
                   <div className="card-body h-full">
                     <h2 className="card-title">Free</h2>
-                    <p>A fast way to get started with TimeLines.</p>
-                    <p className="text-3xl font-bold">$0 <span className="text-sm">USD</span></p>
+                    <p>Ideal for individual use or small groups.</p>
+                    <p className="text-3xl font-bold">0 <span className="text-sm">EUR</span></p>
                     <ul className="mt-4 space-y-2 text-sm">
-                      <li>✅ 50 agent/chat requests per month</li>
-                      <li>✅ 2,000 completions per month</li>
-                      <li>✅ Access to Claude 3.5, Sonnet, GPT-4.1, and more</li>
+                      <li>✅ Core features available</li>
+                      <li>✅ Up to 3 members per workspace</li>
                     </ul>
                     <div className="card-actions mt-6">
-                      <button className="btn btn-primary w-full">Get Started</button>
+                      <button className="btn btn-primary w-full">Start for Free</button>
                     </div>
                   </div>
                 </div>
 
-                {/* Pro Plan */}
+                {/* Intermediate Plan */}
                 <div className="card bg-base-200 shadow-xl border-2 border-primary text-neutral">
                   <div className="card-body">
                     <h2 className="card-title">
-                      Pro <span className="badge badge-primary">Most popular</span>
+                      Intermediate <span className="badge badge-primary">Most Popular</span>
                     </h2>
-                    <p>Unlimited completions and chats with access to more models.</p>
-                    <p className="text-3xl font-bold">$10 <span className="text-sm">/mo</span></p>
+                    <p>More tools for small teams.</p>
+                    <p className="text-3xl font-bold">€9.99 <span className="text-sm">/month</span></p>
                     <ul className="mt-4 space-y-2 text-sm">
-                      <li>✅ Unlimited agent mode and chats with GPT-4.1</li>
-                      <li>✅ Unlimited code completions</li>
-                      <li>✅ Access to Claude 3.7, o1, code review</li>
-                      <li>✅ 6x premium requests vs Free</li>
+                      <li>✅ All features from the free version</li>
+                      <li>✅ Additional tools for collaboration</li>
+                      <li>✅ Up to 10 members per workspace</li>
                     </ul>
                     <div className="card-actions mt-6">
-                      <button className="btn btn-primary w-full">Try for 30 days free</button>
+                      <button className="btn btn-primary w-full">Try Now</button>
                     </div>
                   </div>
                 </div>
 
-                {/* Pro+ Plan */}
+                {/* Business Plan */}
                 <div className="card bg-base-200 shadow-xl border border-base-300 text-neutral">
                   <div className="card-body">
-                    <h2 className="card-title">Pro+</h2>
-                    <p>Maximum flexibility and model choice.</p>
-                    <p className="text-3xl font-bold">$39 <span className="text-sm">/mo</span></p>
+                    <h2 className="card-title">Business</h2>
+                    <p>Comprehensive solution for companies.</p>
+                    <p className="text-3xl font-bold">€59.99 <span className="text-sm">/month</span></p>
                     <ul className="mt-4 space-y-2 text-sm">
-                      <li>✅ Access to all models incl. GPT-4.5</li>
-                      <li>✅ 30x premium requests vs Free</li>
-                      <li>✅ Coding agent (preview)</li>
+                      <li>✅ All features from the Pro plan</li>
+                      <li>✅ Unlimited members per workspace</li>
+                      <li>✅ Personalized support for businesses</li>
                     </ul>
                     <div className="card-actions mt-6">
-                      <button className="btn btn-primary w-full">Get Started</button>
+                      <button className="btn btn-primary w-full">Try Now</button>
                     </div>
                   </div>
                 </div>
@@ -111,8 +107,8 @@ export function HomePage() {
               </div>
             </div>
           </div>
+
         </div>
-      </p>
     </>
   );
 }
