@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import es.angelkrasimirov.timeweaver.models.ProjectRole;
 import es.angelkrasimirov.timeweaver.models.User;
 import es.angelkrasimirov.timeweaver.repositories.UserProjectRoleRepository;
 import es.angelkrasimirov.timeweaver.repositories.UserRepository;
@@ -58,13 +59,13 @@ public class JwtWebSocketInterceptor implements HandshakeInterceptor {
         if (userOpt.isPresent()) {
           User user = userOpt.get();
 
-          boolean hasAccess = userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole_Name(
-              projectId, user.getId(), "ROLE_PROJECT_MANAGER") ||
-              userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole_Name(
-                  projectId, user.getId(), "ROLE_PROJECT_CONTRIBUTOR")
+          boolean hasAccess = userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole(
+              projectId, user.getId(), ProjectRole.ROLE_PROJECT_MANAGER) ||
+              userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole(
+                  projectId, user.getId(), ProjectRole.ROLE_PROJECT_CONTRIBUTOR)
               ||
-              userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole_Name(
-                  projectId, user.getId(), "ROLE_PROJECT_VIEWER");
+              userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole(
+                  projectId, user.getId(), ProjectRole.ROLE_PROJECT_VIEWER);
 
           if (hasAccess) {
             attributes.put("username", username);

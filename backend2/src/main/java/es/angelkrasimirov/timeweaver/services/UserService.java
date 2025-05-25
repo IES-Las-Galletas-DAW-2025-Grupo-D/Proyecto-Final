@@ -30,9 +30,6 @@ public class UserService implements UserDetailsService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private RoleService roleService;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	public List<User> getAllUsers() {
@@ -45,14 +42,7 @@ public class UserService implements UserDetailsService {
 
 	public User createNewUser(UserRegistrationDto userRegistrationDto) {
 		User user = convertToEntity(userRegistrationDto);
-
-		Role role = roleService.getRoleByName("ROLE_USER");
-		if (role == null) {
-			throw new IllegalStateException("Role not found");
-		}
-
-		user.addRole(role);
-
+		user.addRole(Role.ROLE_USER);
 		return hashPasswordUser(user);
 	}
 
@@ -83,7 +73,7 @@ public class UserService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		Set<GrantedAuthority> authorities = user.getRoles().stream()
-				.map((role) -> new SimpleGrantedAuthority(role.getName()))
+				.map(role -> new SimpleGrantedAuthority(role.name()))
 				.collect(Collectors.toSet());
 
 		return new CustomUserDetails(

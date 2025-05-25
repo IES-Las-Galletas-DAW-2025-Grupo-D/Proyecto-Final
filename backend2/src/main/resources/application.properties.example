@@ -16,3 +16,9 @@ logging.level.es.angelkrasimirov=DEBUG
 
 # JWT
 jwt.secret=
+
+# Credentials
+app.admin.username=admin
+app.admin.password=
+app.defaultUser.username=testuser
+app.defaultUser.password=

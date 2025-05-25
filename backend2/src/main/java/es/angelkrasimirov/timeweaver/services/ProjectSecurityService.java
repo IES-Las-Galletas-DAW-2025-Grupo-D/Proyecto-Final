@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import es.angelkrasimirov.timeweaver.models.User;
+import es.angelkrasimirov.timeweaver.models.ProjectRole;
 import es.angelkrasimirov.timeweaver.repositories.UserProjectRoleRepository;
 import es.angelkrasimirov.timeweaver.repositories.UserRepository;
 
@@ -36,7 +37,14 @@ public class ProjectSecurityService {
     }
     User user = userOptional.get();
 
-    return userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole_Name(projectId, user.getId(), roleName);
+    ProjectRole projectRole;
+    try {
+      projectRole = ProjectRole.valueOf(roleName);
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
+    return userProjectRoleRepository.existsByProject_IdAndUser_IdAndProjectRole(
+        projectId, user.getId(), projectRole);
   }
 
   public boolean hasAnyProjectRole(Long projectId, String... roleNames) {
