@@ -28,20 +28,20 @@ public class StripeService {
 
     private static final Logger logger = LoggerFactory.getLogger(StripeService.class);
 
-    @Value("${stripe.secret.key}")
-    private String stripeSecretKey;
-
     @Value("${stripe.intermediate.price.id}")
     private String intermediatePriceId;
 
     @Value("${stripe.business.price.id}")
     private String businessPriceId;
 
+    @Value("${stripe.public.key}")
+    private String stripePublicKey;
+
     @Autowired
     private UserService userService;
 
     public StripeCheckoutResponseDto getCheckoutSessionDetails(String sessionId) throws StripeException {
-        Stripe.apiKey = stripeSecretKey;
+        Stripe.apiKey = stripePublicKey;
 
         try {
             Session session = Session.retrieve(sessionId);
@@ -123,13 +123,7 @@ public class StripeService {
         };
     }
 
-    private String getSubscriptionTypeByPriceId(String priceId) {
-        if (intermediatePriceId.equals(priceId)) {
-            return "intermediate";
-        } else if (businessPriceId.equals(priceId)) {
-            return "business";
-        } else {
-            throw new IllegalArgumentException("Unknown price ID: " + priceId);
-        }
+    public String getStripePublicKey() {
+        return stripePublicKey;
     }
 }

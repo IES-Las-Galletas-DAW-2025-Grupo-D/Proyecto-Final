@@ -25,8 +25,18 @@ public class SubscriptionController {
     @Autowired
     private StripeService stripeService;
 
+    @GetMapping("/stripe/token")
+    public ResponseEntity<String> createStripeToken() {
+
+        try {
+            String token = stripeService.getStripePublicKey();
+            return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/users/{userId}/subscription")
-    @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
     public ResponseEntity<User> assignSubscriptionRole(
             @PathVariable Long userId,
             @Valid @RequestBody SubscriptionRoleDto subscriptionRoleDto) throws NoResourceFoundException {

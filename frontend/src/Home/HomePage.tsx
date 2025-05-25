@@ -21,6 +21,7 @@ export function HomePage() {
 			navigate("/login");
 			return;
 		}
+		const stripeToken = await SubscriptionService.getStripeToken();
 		try {
 			const { url } = await SubscriptionService.createCheckoutSession(priceId);
 			window.location.href = url;

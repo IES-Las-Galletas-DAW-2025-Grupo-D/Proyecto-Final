@@ -1,6 +1,7 @@
 import { toApiUrl, fetchWithAuth } from "../utils/api";
 import { environment } from "../environments/environment";
 import Stripe from 'stripe';
+
 export interface StripeCheckoutResponse {
   sessionId: string;
   paymentStatus: string;
@@ -22,7 +23,7 @@ export interface SubscriptionRoleDto {
 }
 
 export class SubscriptionService {
-
+  private static stripeTokenCache: string | null = null;
   /**
    * Get checkout session details from Stripe
    */
@@ -104,7 +105,27 @@ export class SubscriptionService {
       throw error;
     }
   }
+  /**
+   * Get Stripe token from backend
+   */
+  static async getStripeToken(): Promise<string> {
+    if (this.stripeTokenCache) {
+      return this.stripeTokenCache;
+    }
 
+    try {
+      const response = await fetch(toApiUrl('/stripe/token'));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const token = await response.text();
+      this.stripeTokenCache = token; // Cache for future use
+      return token;
+    } catch (error) {
+      console.error('Error fetching Stripe token:', error);
+      throw error;
+    }
+  }
   /**
    * Helper method to determine subscription type from price ID
    * You'll need to configure these price IDs to match your Stripe setup
@@ -123,13 +144,14 @@ export class SubscriptionService {
    */
   static async createCheckoutSession(priceId: string): Promise<{ url: string }> {
     try {
-      const stripe = new Stripe(environment.STRIPE_SECRET_KEY);
+      const token = await this.getStripeToken();
+      const stripe = new Stripe(this.stripeTokenCache || token);
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
-            price: priceId, // Use the provided price ID
+            price: priceId,
             quantity: 1,
           },
         ],

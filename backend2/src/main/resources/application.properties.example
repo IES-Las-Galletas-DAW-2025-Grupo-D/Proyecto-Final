@@ -22,3 +22,9 @@ app.admin.username=admin
 app.admin.password=
 app.defaultUser.username=testuser
 app.defaultUser.password=
+
+#Stripe 
+# Stripe
+stripe.secret.key=
+stripe.intermediate.price.id=
+stripe.business.price.id=
