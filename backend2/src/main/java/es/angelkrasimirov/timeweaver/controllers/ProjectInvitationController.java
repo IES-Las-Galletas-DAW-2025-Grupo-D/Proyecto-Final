@@ -20,7 +20,6 @@ import es.angelkrasimirov.timeweaver.models.ProjectInvitation;
 import es.angelkrasimirov.timeweaver.models.ProjectRole;
 import es.angelkrasimirov.timeweaver.models.User;
 import es.angelkrasimirov.timeweaver.services.ProjectInvitationService;
-import es.angelkrasimirov.timeweaver.services.ProjectRoleService;
 import es.angelkrasimirov.timeweaver.services.ProjectService;
 import es.angelkrasimirov.timeweaver.services.UserService;
 
@@ -30,9 +29,6 @@ public class ProjectInvitationController {
 
   @Autowired
   private ProjectService projectService;
-
-  @Autowired
-  private ProjectRoleService projectRoleService;
 
   @Autowired
   private UserService userService;
@@ -48,12 +44,12 @@ public class ProjectInvitationController {
     return ResponseEntity.ok(invitations);
   }
 
-  @PutMapping("/projects/{projectId}/users/{userId}/roles/{roleId}/invite")
+  @PutMapping("/projects/{projectId}/users/{userId}/roles/{roleName}/invite")
   @PreAuthorize("hasRole('ADMIN') or @projectSecurityService.hasProjectRole(#projectId, 'ROLE_PROJECT_MANAGER')")
   public ResponseEntity<ProjectInvitation> inviteUserToProject(
       @PathVariable Long projectId,
       @PathVariable Long userId,
-      @PathVariable Long roleId,
+      @PathVariable String roleName,
       Authentication authentication) throws NoResourceFoundException {
 
     Project project = projectService.getProjectById(projectId);
@@ -69,22 +65,24 @@ public class ProjectInvitationController {
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
     User inviterUser = userService.getUserById(userDetails.getId());
 
-    ProjectRole projectRole = projectRoleService.getProjectRoleById(roleId);
-    if (projectRole == null) {
-      return ResponseEntity.notFound().build();
+    ProjectRole projectRole;
+    try {
+      projectRole = ProjectRole.valueOf(roleName.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().build();
     }
 
-    ProjectInvitation invitation = projectInvitationService.createInvitation(inviterUser, invitedUser, project,
-        projectRole);
+    ProjectInvitation invitation = projectInvitationService.createInvitation(
+        inviterUser, invitedUser, project, projectRole);
     return ResponseEntity.ok(invitation);
   }
 
-  @PutMapping("/projects/{projectId}/users/{userId}/roles/{roleId}")
+  @PutMapping("/projects/{projectId}/users/{userId}")
   @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
   public ResponseEntity<Void> acceptProjectInvitation(
       @PathVariable Long projectId,
-      @PathVariable Long userId,
-      @PathVariable Long roleId) throws NoResourceFoundException {
+      @PathVariable Long userId) throws NoResourceFoundException {
+
     Project project = projectService.getProjectById(projectId);
     if (project == null) {
       return ResponseEntity.notFound().build();
@@ -95,23 +93,16 @@ public class ProjectInvitationController {
       return ResponseEntity.notFound().build();
     }
 
-    ProjectRole projectRole = projectRoleService.getProjectRoleById(roleId);
-    if (projectRole == null) {
-      return ResponseEntity.notFound().build();
-    }
-
     ProjectInvitation invitation = projectInvitationService.getInvitationByProjectIdAndUserId(projectId, userId);
-
     projectInvitationService.acceptInvitation(invitation);
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("/projects/{projectId}/users/{userId}/roles/{roleId}/invite")
+  @DeleteMapping("/projects/{projectId}/users/{userId}/invite")
   @PreAuthorize("hasRole('ADMIN') or @projectSecurityService.hasProjectRole(#projectId, 'ROLE_PROJECT_MANAGER') or #userId == authentication.principal.id")
   public ResponseEntity<Void> declineProjectInvitation(
       @PathVariable Long projectId,
-      @PathVariable Long userId,
-      @PathVariable Long roleId) throws NoResourceFoundException {
+      @PathVariable Long userId) throws NoResourceFoundException {
 
     Project project = projectService.getProjectById(projectId);
     if (project == null) {
@@ -124,7 +115,6 @@ public class ProjectInvitationController {
     }
 
     ProjectInvitation invitation = projectInvitationService.getInvitationByProjectIdAndUserId(projectId, userId);
-
     projectInvitationService.declineInvitation(invitation);
     return ResponseEntity.ok().build();
   }

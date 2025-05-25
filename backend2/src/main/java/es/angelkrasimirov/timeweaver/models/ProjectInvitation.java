@@ -23,8 +23,7 @@ public class ProjectInvitation {
   @JoinColumn(name = "project_id")
   private Project project;
 
-  @ManyToOne
-  @JoinColumn(name = "project_role_id")
+  @Enumerated(EnumType.STRING)
   private ProjectRole projectRole;
 
   @Column(name = "created_at", updatable = false)

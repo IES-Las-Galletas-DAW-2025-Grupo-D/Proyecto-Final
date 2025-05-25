@@ -31,8 +31,9 @@ public class User {
 	private String password;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))
+	@Enumerated(EnumType.STRING)
 	private List<Role> roles = new ArrayList<>();
 
 	@JsonIgnore

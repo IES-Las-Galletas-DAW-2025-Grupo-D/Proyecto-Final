@@ -3,6 +3,8 @@ package es.angelkrasimirov.timeweaver.models;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -24,8 +26,7 @@ public class UserProjectRole {
   @JoinColumn(name = "user_id")
   private User user;
 
-  @ManyToOne
-  @JoinColumn(name = "project_role_id")
+  @Enumerated(EnumType.STRING)
   private ProjectRole projectRole;
 
   public Project getProject() {

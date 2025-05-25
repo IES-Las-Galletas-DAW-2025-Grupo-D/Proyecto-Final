@@ -12,7 +12,6 @@ import es.angelkrasimirov.timeweaver.models.ProjectInvitation;
 import es.angelkrasimirov.timeweaver.models.ProjectRole;
 import es.angelkrasimirov.timeweaver.models.User;
 import es.angelkrasimirov.timeweaver.repositories.ProjectInvitationRepository;
-import es.angelkrasimirov.timeweaver.repositories.ProjectRoleRepository;
 
 @Service
 public class ProjectInvitationService {
@@ -22,9 +21,6 @@ public class ProjectInvitationService {
 
   @Autowired
   private UserProjectRoleService userProjectRoleService;
-
-  @Autowired
-  private ProjectRoleRepository projectRoleRepository;
 
   @Autowired
   private NotificationService notificationService;
