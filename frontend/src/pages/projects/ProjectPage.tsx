@@ -5,6 +5,10 @@ import { TimeLine } from "../../components/timeline/TimeLine";
 import { Project } from "../../types/project";
 import { FaTimesCircle, FaCloud } from "react-icons/fa";
 import { getProject } from "../../services/projects/ProjectService";
+import { DataSet } from "vis-timeline/standalone";
+import TimelineWebSocketService from "../../services/timeline/WebSocket";
+import { TimelineWSEvent, WebSocketMessage } from "../../types/timeline";
+import { useAuth } from "../../providers/AuthProvider";
 
 export function ProjectPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -15,6 +19,12 @@ export function ProjectPage() {
   const [loading, setLoading] = useState<boolean>(!project);
   const [error, setError] = useState<string | null>(null);
   const descriptionModalRef = useRef<HTMLDialogElement | null>(null);
+
+  // State for vis-timeline DataSet
+  const [eventsData] = useState(() => new DataSet<TimelineWSEvent>([]));
+  const timelineServiceRef = useRef<TimelineWebSocketService | null>(null);
+
+  const { getToken } = useAuth();
 
   useEffect(() => {
     if (!project && projectId) {
@@ -44,6 +54,67 @@ export function ProjectPage() {
       setError(null);
     }
   }, [projectId, project]);
+
+  // Effect for WebSocket connection management
+  useEffect(() => {
+    if (project && projectId && !timelineServiceRef.current) {
+      console.log(
+        `ProjectPage: Initializing WebSocket for project ${projectId}`
+      );
+
+      const token = getToken();
+
+      if (!token) {
+        console.error("ProjectPage: No authentication token available.");
+        setError("Authentication required. Please log in.");
+        return;
+      }
+
+      const service = new TimelineWebSocketService(projectId, eventsData, {
+        onConnected: () => {
+          console.log("ProjectPage: WebSocket connected successfully.");
+          // Request initial timeline data from server once connected
+          service.sendMessage({
+            type: "request_initial_data",
+            payload: {},
+          });
+        },
+        onMessage: (message: WebSocketMessage) => {
+          console.log(
+            "ProjectPage: WebSocket message received in page:",
+            message
+          );
+          // Most data updates are handled directly by the service on eventsData.
+          // This callback can be used for other UI notifications or specific logic.
+        },
+        onError: (wsError) => {
+          console.error("ProjectPage: WebSocket error:", wsError);
+          setError("Timeline connection error. Please try refreshing."); // Example error handling
+        },
+        onDisconnected: (event) => {
+          console.log("ProjectPage: WebSocket disconnected:", event.reason);
+          // Optionally, attempt to reconnect or notify user
+          if (event.code !== 1000) {
+            // 1000 is normal closure
+            setError("Timeline disconnected. Please try refreshing.");
+          }
+          timelineServiceRef.current = null; // Clear ref on disconnect
+        },
+      });
+      service.connect(token);
+      timelineServiceRef.current = service;
+    }
+
+    return () => {
+      if (timelineServiceRef.current) {
+        console.log(
+          `ProjectPage: Cleaning up WebSocket for project ${projectId}`
+        );
+        timelineServiceRef.current.close();
+        timelineServiceRef.current = null;
+      }
+    };
+  }, [project, projectId]);
 
   if (loading) {
     return (
@@ -140,7 +211,14 @@ export function ProjectPage() {
         )}
       </Island>
       <Island className="flex-grow min-h-0">
-        <TimeLine />
+        {/* Pass eventsData and timelineService to TimeLine component */}
+        {project && (
+          <TimeLine
+            projectId={project.id}
+            eventsData={eventsData}
+            timelineService={timelineServiceRef.current}
+          />
+        )}
       </Island>
 
       <dialog

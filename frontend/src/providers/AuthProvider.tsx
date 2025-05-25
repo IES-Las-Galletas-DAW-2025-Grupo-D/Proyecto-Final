@@ -7,6 +7,7 @@ interface AuthContextType {
   isTokenExpired: () => boolean;
   getUserId: () => string | null;
   getUserName: () => string | null;
+  getToken: () => string | null;
   login: (loginRequest: LoginRequest) => Promise<void>;
   logout: () => void;
 }
@@ -77,6 +78,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const getToken = () => {
+    if (!token) return null;
+    return token;
+  };
+
   const logout = () => {
     setToken(null);
     localStorage.removeItem("token");
@@ -89,6 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isTokenExpired,
         getUserId,
         getUserName,
+        getToken,
         login,
         logout,
       }}
