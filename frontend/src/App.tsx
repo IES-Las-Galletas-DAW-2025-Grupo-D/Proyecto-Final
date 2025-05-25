@@ -12,6 +12,7 @@ import { NotFoundErrorPage } from "./pages/errors/NotFoundErrorPage";
 import { PrivateRoute } from "./components/routes/PrivateRoute";
 import { PublicOnlyRoute } from "./components/routes/PublicOnlyRoute";
 import { PaymentConfirmationPage } from "./pages/payment/PaymentConfirmationPage";
+import { UpgradePage } from "./pages/upgrade/UpgradePage";
 
 export function App() {
   return (
@@ -43,6 +44,7 @@ export function App() {
           </Route>
 
           <Route element={<PrivateRoute />}>
+            <Route path="plans" element={<UpgradePage />}></Route>
             <Route path="/payment/confirmation" element={<PaymentConfirmationPage />} />
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardPage />} />
