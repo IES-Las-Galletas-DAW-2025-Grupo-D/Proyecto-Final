@@ -1,0 +1,27 @@
+{
+  "name": "Backend2 devcontainer",
+  "dockerComposeFile": "../../docker-compose.yml",
+  "service": "backend2",
+  "workspaceFolder": "/workspace/backend2",
+  "shutdownAction": "none",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "moshfeu.compare-folders",
+        "ms-azuretools.vscode-docker",
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "ms-vscode.hexeditor",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "VisualStudioExptTeam.intellicode-api-usage-examples",
+        "ZainChen.json",
+        "esbenp.prettier-vscode",
+        "streetsidesoftware.code-spell-checker-spanish",
+        "redhat.vscode-xml",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-spring-initializr"
+      ]
+    }
+  }
+}
