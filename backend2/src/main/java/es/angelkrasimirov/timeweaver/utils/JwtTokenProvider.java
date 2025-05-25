@@ -34,8 +34,8 @@ public class JwtTokenProvider {
 		Date validity = new Date(now.getTime() + oneHourInMilliseconds);
 
 		return Jwts.builder()
-				.subject(username)
-				.claim("userId", userId)
+				.subject(userId.toString())
+				.claim("username", username)
 				.issuedAt(now)
 				.expiration(validity)
 				.signWith(getSigningKey())
@@ -52,7 +52,11 @@ public class JwtTokenProvider {
 	}
 
 	public String getUsername(String token) throws JwtException {
-		return parseClaims(token).getSubject();
+		return parseClaims(token).get("username", String.class);
+	}
+
+	public Long getUserId(String token) throws JwtException {
+		return Long.parseLong(parseClaims(token).getSubject());
 	}
 
 	public boolean isTokenExpired(String token) throws JwtException {

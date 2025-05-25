@@ -24,19 +24,21 @@ public class ProjectSecurityService {
     this.userRepository = userRepository;
   }
 
-  public boolean hasProjectRole(Long projectId, String roleName) {
+  private Optional<User> getAuthenticatedUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated()) {
-      return false;
+      return Optional.empty();
     }
-
     String username = authentication.getName();
-    Optional<User> userOptional = userRepository.findByUsername(username);
-    if (!userOptional.isPresent()) {
+    return userRepository.findByUsername(username);
+  }
+
+  public boolean hasProjectRole(Long projectId, String roleName) {
+    Optional<User> userOpt = getAuthenticatedUser();
+    if (!userOpt.isPresent()) {
       return false;
     }
-    User user = userOptional.get();
-
+    User user = userOpt.get();
     ProjectRole projectRole;
     try {
       projectRole = ProjectRole.valueOf(roleName);
@@ -54,5 +56,14 @@ public class ProjectSecurityService {
       }
     }
     return false;
+  }
+
+  public boolean hasAnyProjectRole(Long projectId) {
+    Optional<User> userOpt = getAuthenticatedUser();
+    if (!userOpt.isPresent()) {
+      return false;
+    }
+    User user = userOpt.get();
+    return userProjectRoleRepository.existsByProject_IdAndUser_Id(projectId, user.getId());
   }
 }

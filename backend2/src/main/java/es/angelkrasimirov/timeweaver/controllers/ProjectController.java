@@ -3,6 +3,9 @@ package es.angelkrasimirov.timeweaver.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -26,6 +30,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1")
 public class ProjectController {
 
+  private static final int PAGE_SIZE = 6;
+
   @Autowired
   private ProjectService projectService;
 
@@ -35,14 +41,8 @@ public class ProjectController {
   @Autowired
   private UserProjectRoleService userProjectRoleService;
 
-  @PreAuthorize("hasRole('ADMIN')")
-  @GetMapping("/projects")
-  public ResponseEntity<List<Project>> getProjects() {
-    return ResponseEntity.ok(projectService.getAllProjects());
-  }
-
   @PreAuthorize("hasRole('ADMIN') or " +
-      "@projectSecurityService.hasAnyProjectRole(#projectId, 'ROLE_PROJECT_MANAGER', 'ROLE_PROJECT_CONTRIBUTOR', 'ROLE_PROJECT_VIEWER')")
+      "@projectSecurityService.hasAnyProjectRole(#projectId)")
   @GetMapping("/projects/{projectId}")
   public ResponseEntity<Project> getProjectById(@PathVariable Long projectId) {
     Project project = projectService.getProjectById(projectId);
@@ -54,8 +54,10 @@ public class ProjectController {
 
   @GetMapping("/users/{userId}/projects")
   @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
-  public ResponseEntity<List<Project>> getProjectsByUserId(@PathVariable Long userId) {
-    List<Project> projects = projectService.getProjectsByUserId(userId);
+  public ResponseEntity<Page<Project>> getProjectsByUserId(@PathVariable Long userId,
+      @RequestParam(defaultValue = "0") int page) {
+    Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+    Page<Project> projects = projectService.getProjectsByUserId(userId, pageable);
     return ResponseEntity.ok(projects);
   }
 
