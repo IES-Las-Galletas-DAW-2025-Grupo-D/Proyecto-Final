@@ -1,29 +1,28 @@
 import { useEffect, useState } from "react";
-import { getWelcomePhrase } from "./services/main";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { SubscriptionService } from "../services/SubscriptionService";
-import { environment } from "../environments/environment";
 import { useAuth } from "../providers/AuthProvider";
 
 export function HomePage() {
-	const [phrase, setPhrase] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const auth = useAuth();
 	const navigate = useNavigate();
-	useEffect(() => {
-		getWelcomePhrase().then((data) => setPhrase(data));
-	}, []);
 
 	const handlePurchase = async (priceId: string) => {
+		const stripeToken = await SubscriptionService.getStripeToken();
+		const price = await SubscriptionService.getProductPrice();
 		setIsLoading(true);
-
 		if (!auth.isAuthenticated()) {
 			navigate("/login");
 			return;
 		}
-		const stripeToken = await SubscriptionService.getStripeToken();
+
 		try {
-			const { url } = await SubscriptionService.createCheckoutSession(priceId);
+			console.log("Creating checkout session with priceId:", priceId);
+			console.log("price:", price);
+			const { url } = await SubscriptionService.createCheckoutSession(
+				price[priceId]
+			);
 			window.location.href = url;
 		} catch (error) {
 			console.error("Error creating checkout session:", error);
@@ -137,9 +136,7 @@ export function HomePage() {
 												className={`btn btn-primary w-full ${
 													isLoading ? "loading" : ""
 												}`}
-												onClick={() =>
-													handlePurchase(environment.INTERMEDIATE_PRICE_ID)
-												}
+												onClick={() => handlePurchase("intermediatePriceId")}
 												disabled={isLoading}
 											>
 												{isLoading ? (
@@ -170,9 +167,7 @@ export function HomePage() {
 												className={`btn btn-primary w-full ${
 													isLoading ? "loading" : ""
 												}`}
-												onClick={() =>
-													handlePurchase(environment.BUSINESS_PRICE_ID)
-												}
+												onClick={() => handlePurchase("businessPriceId")}
 												disabled={isLoading}
 											>
 												{isLoading ? (
@@ -191,4 +186,7 @@ export function HomePage() {
 			</div>
 		</>
 	);
+}
+function sleep(arg0: number) {
+	throw new Error("Function not implemented.");
 }

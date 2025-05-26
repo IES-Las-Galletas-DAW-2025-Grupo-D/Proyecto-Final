@@ -1,6 +1,7 @@
 import { toApiUrl, fetchWithAuth } from "../utils/api";
 import { environment } from "../environments/environment";
 import Stripe from 'stripe';
+import { useEffect } from "react";
 
 export interface StripeCheckoutResponse {
   sessionId: string;
@@ -15,6 +16,7 @@ export interface StripeCheckoutResponse {
   confirmed: boolean;
 }
 
+
 export interface SubscriptionRoleDto {
   userId: number;
   subscriptionType: string;
@@ -24,6 +26,7 @@ export interface SubscriptionRoleDto {
 
 export class SubscriptionService {
   private static stripeTokenCache: string | null = null;
+  private static productPriceCache: { [key: string]: string } = {};
   /**
    * Get checkout session details from Stripe
    */
@@ -115,6 +118,7 @@ export class SubscriptionService {
 
     try {
       const response = await fetch(toApiUrl('/stripe/token'));
+      console.log('Response from Stripe token API:', response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -126,6 +130,26 @@ export class SubscriptionService {
       throw error;
     }
   }
+  static async getProductPrice(): Promise<{ [key: string]: string }> {
+    if (this.productPriceCache && Object.keys(this.productPriceCache).length > 0) {
+      return this.productPriceCache;
+    }
+
+    try {
+      const response = await fetch(toApiUrl('/stripe/products'));
+      console.log('Response from Stripe products API:', response);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const prices = await response.json();
+      this.productPriceCache = prices; // Cache for future use
+      return prices;
+    } catch (error) {
+      console.error('Error fetching product prices:', error);
+      throw error;
+    }
+  }
+
   /**
    * Helper method to determine subscription type from price ID
    * You'll need to configure these price IDs to match your Stripe setup
@@ -144,14 +168,20 @@ export class SubscriptionService {
    */
   static async createCheckoutSession(priceId: string): Promise<{ url: string }> {
     try {
+      if (!priceId) {
+        throw new Error('Price ID is required to create a checkout session');
+      }
+      const price = await this.getProductPrice();
       const token = await this.getStripeToken();
       const stripe = new Stripe(this.stripeTokenCache || token);
 
+      console.log('Creating checkout session with price ID:', priceId);
+      console.log('Using product prices:', this.productPriceCache);
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
-            price: priceId,
+            price: this.productPriceCache[priceId] || priceId,
             quantity: 1,
           },
         ],

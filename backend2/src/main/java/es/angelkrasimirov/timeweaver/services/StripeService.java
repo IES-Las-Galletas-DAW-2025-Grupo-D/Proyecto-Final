@@ -98,10 +98,6 @@ public class StripeService {
 
         Role subscriptionRole = getSubscriptionRole(subscriptionType);
 
-        System.out.println("=========================================================================");
-        System.out.println("Assigning subscription role: " + subscriptionRole + " to user: " + userId);
-        System.out.println("=========================================================================");
-
         // Remove existing subscription roles
         user.removeRole(Role.ROLE_INTERMEDIATE);
         user.removeRole(Role.ROLE_BUSINESS);
@@ -125,5 +121,13 @@ public class StripeService {
 
     public String getStripePublicKey() {
         return stripePublicKey;
+    }
+
+    public String getIntermediatePriceId() {
+        return intermediatePriceId;
+    }
+
+    public String getBusinessPriceId() {
+        return businessPriceId;
     }
 }

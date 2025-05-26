@@ -1,5 +1,8 @@
 package es.angelkrasimirov.timeweaver.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +36,18 @@ public class SubscriptionController {
             return ResponseEntity.ok(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/stripe/products")
+    public ResponseEntity<Map<String, String>> getStripeProducts() {
+        Map<String, String> response = new HashMap<>();
+        try {
+            response.put("intermediatePriceId", stripeService.getIntermediatePriceId());
+            response.put("businessPriceId", stripeService.getBusinessPriceId());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
