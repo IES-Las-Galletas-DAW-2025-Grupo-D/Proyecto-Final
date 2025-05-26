@@ -3,15 +3,13 @@ package es.angelkrasimirov.timeweaver.models;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,15 +17,7 @@ import java.util.List;
 @Table(name = "events")
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private String type;
-
-    @Column(columnDefinition = "TEXT")
-    private String content;
+    private String id; // Changed to String
 
     @ManyToOne
     @JoinColumn(name = "project_id")
@@ -37,56 +27,29 @@ public class Event {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Lob // Specifies that this is a large object
+    @Column(name = "event_data", columnDefinition = "TEXT") // Store as TEXT in the database
+    private String data; // Will store the JSON string of the event data
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Conversation> conversations = new ArrayList<>();
 
     public Event() {
     }
 
-    public Event(LocalDateTime startDate, LocalDateTime endDate, String type, String content, Project project,
-            User user) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.type = type;
-        this.content = content;
+    // Constructor can be simplified or primarily use setters
+    public Event(Project project, User user, String data) {
         this.project = project;
         this.user = user;
+        this.data = data;
     }
 
-    public Long getId() {
+    public String getId() { // Changed to String
         return id;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public void setId(String id) { // Added setter for String ID
+        this.id = id;
     }
 
     public Project getProject() {
@@ -103,6 +66,14 @@ public class Event {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
     public List<Conversation> getConversations() {

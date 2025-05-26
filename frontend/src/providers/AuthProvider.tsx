@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { LoginRequest } from "../types/user.types";
+import { LoginRequest } from "../types/user";
 import { login as loginService } from "../services/LoginService";
 
 interface AuthContextType {
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.name;
+      return payload.username;
     } catch (error) {
       console.error("Error decoding token:", error);
       return null;

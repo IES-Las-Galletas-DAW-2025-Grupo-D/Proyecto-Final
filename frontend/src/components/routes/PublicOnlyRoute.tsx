@@ -16,7 +16,10 @@ export const PublicOnlyRoute: React.FC<PublicOnlyRouteProps> = ({
   if (isAuthenticated()) {
     const from =
       location.state?.from?.pathname + (location.state?.from?.search || "");
-    const destination = from && from !== location.pathname ? from : redirectTo;
+    const destination =
+      from && from != "undefined" && from !== location.pathname
+        ? from
+        : redirectTo;
     console.log("PublicOnlyRoute: redirecting to", destination);
     return <Navigate to={destination} replace />;
   }
