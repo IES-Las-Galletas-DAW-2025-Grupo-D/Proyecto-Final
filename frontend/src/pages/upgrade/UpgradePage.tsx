@@ -31,7 +31,7 @@ export function UpgradePage() {
               <h2 className="card-title">Free</h2>
               <p>A fast way to get started with TimeLines.</p>
               <p className="text-3xl font-bold">
-                $0 <span className="text-sm">USD</span>
+                0€ <span className="text-sm">USD</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
                 <li>✅ up to 3 members at a time</li>
