@@ -54,7 +54,7 @@ export function UpgradePage() {
               </h2>
               <p>The best for small and even medium teams.</p>
               <p className="text-3xl font-bold">
-                $10 <span className="text-sm">/mo</span>
+                9,99€ <span className="text-sm">/mo</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
                 <li>✅ Up to 10 slots per project!</li>
@@ -82,7 +82,7 @@ export function UpgradePage() {
               <h2 className="card-title">Pro+</h2>
               <p>Maximum flexibility and capacity.</p>
               <p className="text-3xl font-bold">
-                $39 <span className="text-sm">/mo</span>
+                59,99€ <span className="text-sm">/mo</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
                 <li>✅ Unlimited slots! Unlimited Projects!</li>
