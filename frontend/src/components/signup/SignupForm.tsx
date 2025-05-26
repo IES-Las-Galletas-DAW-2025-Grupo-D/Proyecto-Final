@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router";
-import { useAuth } from "../../providers/AuthProvider";
+import { BiErrorCircle } from "react-icons/bi";
+import { Link, useNavigate } from "react-router";
 import { register } from "../../services/RegisterService";
-import { useNavigate } from "react-router";
+import { useAuth } from "../../providers/AuthProvider";
 
 export function SignupForm() {
   // const navigate = useNavigate();
@@ -12,27 +12,42 @@ export function SignupForm() {
   // const [password_confirmation, setPasswordConfirmation] = useState("");
 
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setPasswordConfirmation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  
-    const handleSubmit = async (e: React.FormEvent) => {
+  const { login } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await register({name, email, password, password_confirmation });
-      alert("Usuario registrado con éxito");
-      navigate("/login");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError("Invalid name, email or password");
-        alert("Error: " + error.message);
-      } else {
-        alert("Please fill in all fields");
-      }
+    if (password !== password_confirmation) {
+      setError("Passwords do not match");
+      return;
     }
+
+    setIsLoading(true);
+
+    const error = await register({ username, email, password });
+
+    if (error) {
+      const errorMsg = Object.entries(error as unknown as object)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("\n");
+      console.error("Signup error:", error);
+      setError(errorMsg || "An unknown error occurred");
+      setIsLoading(false);
+      return;
+    }
+
+    login({ username, password })
+      .then(() => {
+        navigate("/");
+      })
+      .catch((_) => {
+        navigate("/login");
+      });
   };
   return (
     <>
@@ -42,20 +57,12 @@ export function SignupForm() {
 
           {error && (
             <div className="alert alert-error mt-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{error}</span>
+              <BiErrorCircle className="h-6 w-6" />
+              <ul>
+                {error.split("\n").map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
             </div>
           )}
 
@@ -82,8 +89,8 @@ export function SignupForm() {
                 type="text"
                 placeholder="Enter your username"
                 className="input input-bordered w-full"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -125,7 +132,7 @@ export function SignupForm() {
                 {isLoading ? (
                   <span className="loading loading-spinner"></span>
                 ) : (
-                  "Login"
+                  "Register"
                 )}
               </button>
             </div>

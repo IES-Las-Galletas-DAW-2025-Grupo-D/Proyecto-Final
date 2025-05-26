@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.angelkrasimirov.timeweaver.dtos.AuthResponseDto;
 import es.angelkrasimirov.timeweaver.dtos.UserLoginDto;
+import es.angelkrasimirov.timeweaver.dtos.UserRegistrationDto;
+import es.angelkrasimirov.timeweaver.models.User;
 import es.angelkrasimirov.timeweaver.services.AuthenticationService;
+import es.angelkrasimirov.timeweaver.services.UserService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -17,6 +21,9 @@ public class AuthController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+
+	@Autowired
+	private UserService userService;
 
 	@PostMapping("/login")
 	public ResponseEntity<AuthResponseDto> login(@RequestBody UserLoginDto loginDto) throws InterruptedException {
@@ -31,13 +38,13 @@ public class AuthController {
 		return ResponseEntity.ok(authResponseDto);
 	}
 
-	// @PostMapping("/register")
-	// public ResponseEntity<AuthResponseDto> createUser(@Valid @RequestBody User
-	// user) throws InterruptedException {
-	// String password = user.getPassword();
-	// User newUser = userController.createUser(user).getBody();
-
-	// LoginDto loginDto = new LoginDto(newUser.getUsername(), password);
-	// return login(loginDto);
-	// }
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
+		if (userService.existsByUsername(registrationDto.getUsername())) {
+			throw new IllegalArgumentException("Username already exists");
+		}
+		User user = userService.createNewUser(registrationDto);
+		userService.saveUser(user);
+		return ResponseEntity.ok().build();
+	}
 }

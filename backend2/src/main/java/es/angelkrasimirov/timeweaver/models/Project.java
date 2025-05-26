@@ -32,6 +32,10 @@ public class Project {
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
   private List<UserProjectRole> userProjectRoles = new ArrayList<>();
 
+  @JsonIgnore
+  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Event> events = new ArrayList<>();
+
   public Long getId() {
     return id;
   }
@@ -72,5 +76,23 @@ public class Project {
   public void removeUserProjectRole(UserProjectRole userProjectRole) {
     this.userProjectRoles.remove(userProjectRole);
     userProjectRole.setProject(null);
+  }
+
+  public List<Event> getEvents() {
+    return events;
+  }
+
+  public void setEvents(List<Event> events) {
+    this.events = events;
+  }
+
+  public void addEvent(Event event) {
+    this.events.add(event);
+    event.setProject(this);
+  }
+
+  public void removeEvent(Event event) {
+    this.events.remove(event);
+    event.setProject(null);
   }
 }

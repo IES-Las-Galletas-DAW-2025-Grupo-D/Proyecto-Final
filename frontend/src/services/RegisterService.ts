@@ -1,7 +1,8 @@
-import { RegisterRequest } from "../types/user.types";
+import { RegisterRequest } from "../types/user";
+import { toApiUrl } from "../utils/api";
 
 export const register = async (params: RegisterRequest) => {
-  const response = await fetch("/api/v1/auth/register", {
+  const response = await fetch(toApiUrl("/auth/register"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -11,8 +12,9 @@ export const register = async (params: RegisterRequest) => {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Register failed");
+
+    return error;
   }
 
-  return await response.json();
+  return null;
 };

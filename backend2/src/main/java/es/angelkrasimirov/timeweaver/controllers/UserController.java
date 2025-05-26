@@ -87,8 +87,8 @@ public class UserController {
 
 	// @PostMapping("/users/register")
 	// public ResponseEntity<User> registerUser(@RequestBody User user) {
-	// User newUser = userService.registerUser(user);
-	// return ResponseEntity.ok(newUser);
+	// 		User newUser = userService.registerUser(user)
+	// 		return ResponseEntity.ok(newUser);
 	// }
 	//
 	// @PostMapping("/users/login")

@@ -3,3 +3,8 @@ export interface Project {
   name: string;
   description: string;
 }
+
+export interface ProjectCreate {
+  name: string;
+  description?: string;
+}

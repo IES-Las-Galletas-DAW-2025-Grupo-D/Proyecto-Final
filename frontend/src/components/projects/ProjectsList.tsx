@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { getProjects } from "../../services/projects/ProjectService";
+import {
+  createProject,
+  getProjects,
+} from "../../services/projects/ProjectService";
 import { PaginatedResponse } from "../../types/paginated";
 import { Project } from "../../types/project";
 import { ProjectCard } from "./ProjectCard";
@@ -7,6 +10,7 @@ import { FaPlus, FaTimesCircle, FaChevronDown } from "react-icons/fa";
 import { transferApiQueryParams } from "../../utils/api";
 import { getPaginationInfo } from "../../utils/pagination";
 import { useAuth } from "../../providers/AuthProvider";
+import { useNavigate } from "react-router";
 
 export function ProjectsList() {
   const [projectsData, setProjectsData] =
@@ -20,6 +24,9 @@ export function ProjectsList() {
     { value: string; label: string }[]
   >([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectDescription, setNewProjectDescription] = useState("");
+  const navigate = useNavigate();
 
   const userOptions = [
     { value: "User 1", label: "User 1" },
@@ -39,11 +46,10 @@ export function ProjectsList() {
     if (searchTerm.trim() === "") {
       setFilteredUserOptions([]);
     } else {
-      setFilteredUserOptions(
-        userOptions.filter((user) =>
-          user.label.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+      const filtered = userOptions.filter((user) =>
+        user.label.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      setFilteredUserOptions(filtered.slice(0, 4));
     }
   };
 
@@ -61,6 +67,54 @@ export function ProjectsList() {
     }
   };
 
+  const handleOpenModal = () => {
+    setNewProjectName("");
+    setNewProjectDescription("");
+    const modal = document.getElementById(
+      "new_project_modal"
+    ) as HTMLDialogElement | null;
+    modal?.showModal();
+  };
+
+  const handleCloseModal = () => {
+    const modal = document.getElementById(
+      "new_project_modal"
+    ) as HTMLDialogElement | null;
+    modal?.close();
+  };
+
+  const handleCreateProject = async () => {
+    const userId = getUserId();
+
+    if (!userId) {
+      setError("User not authenticated");
+      handleCloseModal();
+      return;
+    }
+
+    if (!newProjectName.trim()) {
+      setError("Project name cannot be empty.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const projectData = {
+        name: newProjectName,
+        description: newProjectDescription || undefined,
+      };
+      const newProject = await createProject(userId, projectData);
+      setError(null);
+      handleCloseModal();
+
+      navigate(`/dashboard/projects/${newProject.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create project");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePageChange = async (url: string) => {
     const userId = getUserId();
     if (!userId) {
@@ -75,7 +129,7 @@ export function ProjectsList() {
         window.history.replaceState({}, "", newUrl);
       }
 
-      const data = await getProjects(userId, url /*, activeOwnerFilter */);
+      const data = await getProjects(userId, url);
       setProjectsData(data);
       setError(null);
     } catch (err) {
@@ -114,7 +168,7 @@ export function ProjectsList() {
               className={`btn text-nowrap ${
                 activeOwnerFilter !== "Anyone"
                   ? "btn-soft border-accent border-1 btn-accent"
-                  : ""
+                  : "text-base-content/60"
               }`}
             >
               {userOptions.find((u) => u.value === activeOwnerFilter)?.label ||
@@ -123,7 +177,7 @@ export function ProjectsList() {
             </button>
             <ul
               tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-60 z-50"
+              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40 z-50"
             >
               {userOptions.some((u) => u.value === activeOwnerFilter) ? (
                 <li key="active-user-filter">
@@ -205,11 +259,66 @@ export function ProjectsList() {
             </ul>
           </div>
         </div>
-        <button className="btn btn-success w-full sm:w-auto">
+        <button
+          className="btn btn-success w-full sm:w-auto"
+          onClick={handleOpenModal}
+        >
           <FaPlus className="w-4 h-4" />
           New Project
         </button>
       </div>
+
+      {/* New Project Modal */}
+      <dialog id="new_project_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Create New Project</h3>
+          <div className="py-4">
+            <label className="label">
+              <span className="label-text">Project Name</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Enter project name"
+              className="input input-bordered w-full"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+            />
+          </div>
+          <div className="pb-4">
+            <label className="label">
+              <span className="label-text">Description (Optional)</span>
+            </label>
+            <textarea
+              placeholder="Enter project description"
+              className="textarea textarea-bordered w-full"
+              value={newProjectDescription}
+              onChange={(e) => setNewProjectDescription(e.target.value)}
+            />
+          </div>
+          <div className="modal-action">
+            <button
+              className="btn btn-primary"
+              onClick={handleCreateProject}
+              disabled={!newProjectName.trim() || loading}
+            >
+              {loading ? (
+                <span className="loading loading-spinner loading-xs"></span>
+              ) : (
+                "Create"
+              )}
+            </button>
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn" onClick={handleCloseModal}>
+                Close
+              </button>
+            </form>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={handleCloseModal}>close</button>
+        </form>
+      </dialog>
 
       {loading ? (
         <LoadingSkeleton />

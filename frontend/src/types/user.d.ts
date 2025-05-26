@@ -1,3 +1,5 @@
+import { Role } from "./role.enum";
+
 export type LoginResponse = {
   token: string;
 };
@@ -8,8 +10,15 @@ export type LoginRequest = {
 };
 
 export type RegisterRequest = {
-  name: string;
+  username: string;
   email: string;
   password: string;
-  password_confirmation: string;
 };
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+  roles: Role[];
+}

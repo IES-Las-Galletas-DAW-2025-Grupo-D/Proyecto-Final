@@ -10,6 +10,15 @@ export function toApiUrl(route: string): string {
 }
 
 /**
+ * Constructs the full WebSocket URL for a given route.
+ * @param route it may start with a slash
+ * @returns
+ */
+export function toWsUrl(route: string): string {
+  return `${environment.wsUrl}${route}`;
+}
+
+/**
  * Fetches a resource with bearer token authentication.
  * It adds the token from localStorage to the Authorization header.
  * If the token is not present, it will not add the header.

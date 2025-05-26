@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { LoginRequest } from "../types/user.types";
+import { LoginRequest } from "../types/user";
 import { login as loginService } from "../services/LoginService";
 
 interface AuthContextType {
@@ -7,6 +7,7 @@ interface AuthContextType {
   isTokenExpired: () => boolean;
   getUserId: () => string | null;
   getUserName: () => string | null;
+  getToken: () => string | null;
   login: (loginRequest: LoginRequest) => Promise<void>;
   logout: () => void;
 }
@@ -70,11 +71,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.name;
+      return payload.username;
     } catch (error) {
       console.error("Error decoding token:", error);
       return null;
     }
+  };
+
+  const getToken = () => {
+    if (!token) return null;
+    return token;
   };
 
   const logout = () => {
@@ -89,6 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isTokenExpired,
         getUserId,
         getUserName,
+        getToken,
         login,
         logout,
       }}

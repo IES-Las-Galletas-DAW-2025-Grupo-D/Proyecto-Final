@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useTheme } from "../../../../providers/ThemeProvider";
-import { FaFolder, FaArrowUp, FaChevronDown } from "react-icons/fa";
+import { FaFolder, FaArrowUp, FaChevronDown, FaBell } from "react-icons/fa";
 import { Link } from "react-router";
 import { useAuth } from "../../../../providers/AuthProvider";
+import { useNotifications } from "../../../../providers/NotificationProvider";
 
 export function Header() {
   const [width, setWidth] = useState(260);
@@ -10,6 +11,7 @@ export function Header() {
   const headerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
   const auth = useAuth();
+  const { notifications } = useNotifications();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -109,6 +111,16 @@ export function Header() {
             Upgrade Plan
           </Link>
         </div>
+
+        {notifications.length > 0 && (
+          <Link
+            to={"/dashboard/notifications"}
+            className="btn btn-block justify-center gap-2 btn-ghost mt-3"
+          >
+            <FaBell className="h-5 w-5" />
+            Notifications ({notifications.length})
+          </Link>
+        )}
       </div>
 
       <div className="p-4 border-t border-base-300">
