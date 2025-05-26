@@ -34,9 +34,9 @@ export function UpgradePage() {
                 $0 <span className="text-sm">USD</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
-                <li>✅ 50 agent/chat requests per month</li>
-                <li>✅ 2,000 completions per month</li>
-                <li>✅ Access to Claude 3.5, Sonnet, GPT-4.1, and more</li>
+                <li>✅ up to 3 members at a time</li>
+                <li>✅ all features, for free!</li>
+                <li>Personal use only</li>
               </ul>
               <div className="card-actions mt-6">
                 <Link to="/signup" className="btn btn-primary w-full">
@@ -57,10 +57,8 @@ export function UpgradePage() {
                 $10 <span className="text-sm">/mo</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
-                <li>✅ Unlimited agent mode and chats with GPT-4.1</li>
-                <li>✅ Unlimited code completions</li>
-                <li>✅ Access to Claude 3.7, o1, code review</li>
-                <li>✅ 6x premium requests vs Free</li>
+                <li>✅ Up to 10 slots per project!</li>
+                <li>✅ Monetize your work - charge clients</li>
               </ul>
               <div className="card-actions mt-6">
                 <button
@@ -87,9 +85,9 @@ export function UpgradePage() {
                 $39 <span className="text-sm">/mo</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
-                <li>✅ Access to all models incl. GPT-4.5</li>
-                <li>✅ 30x premium requests vs Free</li>
-                <li>✅ Coding agent (preview)</li>
+                <li>✅ Unlimited slots! Unlimited Projects!</li>
+                <li>✅ Enterprise License</li>
+                <li>✅ Advanced security and encryption</li>
               </ul>
               <div className="card-actions mt-6">
                 <button
