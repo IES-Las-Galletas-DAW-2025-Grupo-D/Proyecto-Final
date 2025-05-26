@@ -52,7 +52,7 @@ export function UpgradePage() {
               <h2 className="card-title">
                 Pro <span className="badge badge-primary">Most popular</span>
               </h2>
-              <p>Unlimited completions and chats with access to more models.</p>
+              <p>The best for small and even medium teams.</p>
               <p className="text-3xl font-bold">
                 $10 <span className="text-sm">/mo</span>
               </p>
@@ -80,7 +80,7 @@ export function UpgradePage() {
           <div className="card bg-base-200 shadow-xl border border-base-300 text-base-content">
             <div className="card-body">
               <h2 className="card-title">Pro+</h2>
-              <p>Maximum flexibility and model choice.</p>
+              <p>Maximum flexibility and capacity.</p>
               <p className="text-3xl font-bold">
                 $39 <span className="text-sm">/mo</span>
               </p>
