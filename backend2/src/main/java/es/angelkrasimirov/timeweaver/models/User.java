@@ -34,6 +34,7 @@ public class User {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))
 	@Enumerated(EnumType.STRING)
+	@Column(length = 50)
 	private List<Role> roles = new ArrayList<>();
 
 	@JsonIgnore

@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router";
 import { FullLayout } from "./components/ui/layout/full/FullLayout";
+import { FullLayout } from "./components/ui/layout/full/FullLayout";
 import { HomePage } from "./Home/HomePage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
 import { ThemeProvider } from "./providers/ThemeProvider";
@@ -11,6 +12,8 @@ import { LoginPage } from "./pages/login/LoginPage";
 import { NotFoundErrorPage } from "./pages/errors/NotFoundErrorPage";
 import { PrivateRoute } from "./components/routes/PrivateRoute";
 import { PublicOnlyRoute } from "./components/routes/PublicOnlyRoute";
+import { PaymentConfirmationPage } from "./pages/payment/PaymentConfirmationPage";
+import { UpgradePage } from "./pages/upgrade/UpgradePage";
 
 export function App() {
   return (
@@ -42,6 +45,8 @@ export function App() {
           </Route>
 
           <Route element={<PrivateRoute />}>
+            <Route path="plans" element={<UpgradePage />}></Route>
+            <Route path="/payment/confirmation" element={<PaymentConfirmationPage />} />
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<DashboardPage />} />
               <Route path="projects">

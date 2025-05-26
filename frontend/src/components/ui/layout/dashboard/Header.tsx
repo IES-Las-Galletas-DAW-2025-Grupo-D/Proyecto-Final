@@ -104,10 +104,10 @@ export function Header() {
           <span className="indicator-item indicator-top indicator-end badge badge-warning text-xs p-2">
             -10%
           </span>
-          <button className="btn btn-block justify-center gap-2 bg-accent">
+          <Link to="/plans" className="btn btn-block justify-center gap-2 bg-accent">
             <FaArrowUp className="h-5 w-5" />
             Upgrade Plan
-          </button>
+          </Link>
         </div>
       </div>
 
