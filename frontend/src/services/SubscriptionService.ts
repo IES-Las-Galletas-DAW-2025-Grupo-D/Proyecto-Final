@@ -1,5 +1,4 @@
 import { toApiUrl, fetchWithAuth } from "../utils/api";
-import { environment } from "../environments/environment";
 import Stripe from 'stripe';
 import { useEffect } from "react";
 
@@ -155,9 +154,9 @@ export class SubscriptionService {
    * You'll need to configure these price IDs to match your Stripe setup
    */
   private static getSubscriptionTypeFromPriceId(priceId: string): string {
-    if (priceId === environment.INTERMEDIATE_PRICE_ID) {
+    if (priceId === this.productPriceCache['intermediatePriceId']) {
       return 'intermediate';
-    } else if (priceId === environment.BUSINESS_PRICE_ID) {
+    } else if (priceId === this.productPriceCache['businessPriceId']) {
       return 'business';
     } else {
       throw new Error(`Unknown price ID: ${priceId}`);

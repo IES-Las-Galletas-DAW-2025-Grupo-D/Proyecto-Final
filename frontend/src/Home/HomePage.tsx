@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { SubscriptionService } from "../services/SubscriptionService";
 import { useAuth } from "../providers/AuthProvider";
@@ -9,7 +9,7 @@ export function HomePage() {
 	const navigate = useNavigate();
 
 	const handlePurchase = async (priceId: string) => {
-		const stripeToken = await SubscriptionService.getStripeToken();
+		await SubscriptionService.getStripeToken();
 		const price = await SubscriptionService.getProductPrice();
 		setIsLoading(true);
 		if (!auth.isAuthenticated()) {
