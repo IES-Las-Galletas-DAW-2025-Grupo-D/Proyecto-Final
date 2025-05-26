@@ -54,7 +54,7 @@ export function UpgradePage() {
               </h2>
               <p>The best for small and even medium teams.</p>
               <p className="text-3xl font-bold">
-                9,99€ <span className="text-sm">/mo</span>
+                12,99€ <span className="text-sm">/mo</span>
               </p>
               <ul className="mt-4 space-y-2 text-sm">
                 <li>✅ Up to 10 slots per project!</li>
