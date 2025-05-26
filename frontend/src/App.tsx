@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router";
 import { FullLayout } from "./components/ui/layout/full/FullLayout";
+import { FullLayout } from "./components/ui/layout/full/FullLayout";
 import { HomePage } from "./Home/HomePage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
 import { ThemeProvider } from "./providers/ThemeProvider";
