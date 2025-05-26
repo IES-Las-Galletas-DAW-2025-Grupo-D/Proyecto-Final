@@ -8,9 +8,8 @@ import es.angelkrasimirov.timeweaver.models.UserProjectRoleId;
 
 public interface UserProjectRoleRepository extends JpaRepository<UserProjectRole, UserProjectRoleId> {
 
-  // boolean existsByProject_IdAndUser_IdAndProjectRole_Name(Long projectId, Long userId, String roleName);
-
   boolean existsByProject_IdAndUser_IdAndProjectRole(Long projectId, Long id, ProjectRole projectRole);
+
   boolean existsByProject_IdAndUser_Id(Long projectId, Long userId);
 
 }

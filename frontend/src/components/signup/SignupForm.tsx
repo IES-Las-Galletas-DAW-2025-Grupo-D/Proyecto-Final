@@ -5,12 +5,6 @@ import { register } from "../../services/RegisterService";
 import { useAuth } from "../../providers/AuthProvider";
 
 export function SignupForm() {
-  // const navigate = useNavigate();
-  // const [name, setName] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [password_confirmation, setPasswordConfirmation] = useState("");
-
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");

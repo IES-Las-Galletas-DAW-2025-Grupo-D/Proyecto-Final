@@ -59,7 +59,6 @@ public class StripeService {
                 response.setAmountTotal(new BigDecimal(session.getAmountTotal()).divide(new BigDecimal(100)));
             }
 
-            // Get line items to extract price and product information
             Map<String, Object> lineItemParams = Map.of("limit", 10);
             LineItemCollection lineItems = session.listLineItems(lineItemParams);
 
@@ -73,7 +72,7 @@ public class StripeService {
                     if (price.getProductObject() != null) {
                         response.setProductName(price.getProductObject().getName());
                     } else if (price.getProduct() != null) {
-                        // If product is just an ID, fetch the product details
+
                         Product product = Product.retrieve(price.getProduct());
                         response.setProductName(product.getName());
                     }
@@ -98,11 +97,9 @@ public class StripeService {
 
         Role subscriptionRole = getSubscriptionRole(subscriptionType);
 
-        // Remove existing subscription roles
         user.removeRole(Role.ROLE_INTERMEDIATE);
         user.removeRole(Role.ROLE_BUSINESS);
 
-        // Add new subscription role
         user.addRole(subscriptionRole);
 
         User updatedUser = userService.saveUser(user);

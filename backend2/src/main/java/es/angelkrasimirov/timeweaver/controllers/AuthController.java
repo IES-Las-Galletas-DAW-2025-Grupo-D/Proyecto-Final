@@ -28,7 +28,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<AuthResponseDto> login(@RequestBody UserLoginDto loginDto) throws InterruptedException {
 
-		Thread.sleep(500 + (long) (Math.random() * 500)); // Simulate internal server delay
+		Thread.sleep(500 + (long) (Math.random() * 500));
 
 		String token = authenticationService.login(loginDto);
 

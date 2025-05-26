@@ -85,15 +85,4 @@ public class UserController {
 		return ResponseEntity.ok(userService.existsByUsername(username));
 	}
 
-	// @PostMapping("/users/register")
-	// public ResponseEntity<User> registerUser(@RequestBody User user) {
-	// 		User newUser = userService.registerUser(user)
-	// 		return ResponseEntity.ok(newUser);
-	// }
-	//
-	// @PostMapping("/users/login")
-	// public ResponseEntity<String> loginUser(@RequestBody User user) {
-	// String token = authenticationService.authenticateUser(user);
-	// return ResponseEntity.ok(token);
-	// }
 }

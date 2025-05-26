@@ -44,8 +44,6 @@ export function Header() {
 
   const handleLogout = () => {
     auth.logout();
-    // You might want to redirect the user to the login page here
-    // For example, using react-router: history.push('/login');
   };
 
   const toggleCurrentTheme = () => {
@@ -106,7 +104,10 @@ export function Header() {
           <span className="indicator-item indicator-top indicator-end badge badge-warning text-xs p-2">
             -10%
           </span>
-          <Link to="/plans" className="btn btn-block justify-center gap-2 bg-accent">
+          <Link
+            to="/plans"
+            className="btn btn-block justify-center gap-2 bg-accent"
+          >
             <FaArrowUp className="h-5 w-5" />
             Upgrade Plan
           </Link>

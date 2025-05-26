@@ -128,3 +128,48 @@ export const declineProject = async (userId: number, projectId: number) => {
   }
   return true;
 };
+
+export const deleteProject = async (projectId: string) => {
+  const response = await fetchWithAuth(toApiUrl(`/projects/${projectId}`), {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    let message;
+    try {
+      const errorData = await response.json();
+      message = errorData.message || "Failed to delete project";
+    } catch {
+      message = "Failed to delete project";
+    }
+    throw new Error(message);
+  }
+  return true;
+};
+
+export const updateProject = async (
+  projectId: string,
+  projectData: Partial<ProjectCreate>
+) => {
+  const response = await fetchWithAuth(toApiUrl(`/projects/${projectId}`), {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(projectData),
+  });
+  if (!response.ok) {
+    let message;
+    try {
+      const errorData = await response.json();
+      message = errorData.message || "Failed to update project";
+    } catch {
+      message = "Failed to update project";
+    }
+    throw new Error(message);
+  }
+  const data = await response.json();
+  return data as Project;
+};

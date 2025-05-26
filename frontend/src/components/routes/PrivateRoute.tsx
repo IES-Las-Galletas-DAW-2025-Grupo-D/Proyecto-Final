@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Outlet, useLocation } from "react-router"; // useLocation is needed
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "../../providers/AuthProvider";
 
 type PrivateRouteProps = {
@@ -11,14 +11,11 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({
   children,
 }) => {
   const { isAuthenticated } = useAuth();
-  const location = useLocation(); // Get the current location
+  const location = useLocation();
 
   if (!isAuthenticated()) {
-    // Pass the current location in the state object
-    // This allows the login page or subsequent logic to redirect back
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
-  // Render children if provided, otherwise render the Outlet for nested routes
   return children ? <>{children}</> : <Outlet />;
 };

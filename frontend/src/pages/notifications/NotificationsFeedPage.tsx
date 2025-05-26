@@ -3,17 +3,16 @@ import { useNotifications } from "../../providers/NotificationProvider";
 import {
   Notification,
   Data as NotificationData,
-} from "../../types/notification"; // Assuming notification.d.ts is resolved
+} from "../../types/notification";
 import { ProjectRole } from "../../types/projectRole.enum";
 import {
   acceptProjectInvitation,
   declineProject,
 } from "../../services/projects/ProjectService";
-// import { useAuth } from "../../providers/AuthProvider"; // Not strictly needed if invitedUser.id is sufficient
+// import { useAuth } from "../../providers/AuthProvider";
 
 export const NotificationsFeedPage: React.FC = () => {
   const { notifications, markNotificationAsRead } = useNotifications();
-  // const { user } = useAuth(); // If you need the current user's ID for other checks
 
   const formatDateTime = (dateInput: string | Date | undefined) => {
     if (!dateInput) return "Unknown date";
@@ -36,7 +35,7 @@ export const NotificationsFeedPage: React.FC = () => {
       !notification.data?.invitedUser?.id
     ) {
       console.error("Missing data for accepting invitation:", notification);
-      // TODO: Show error toast to user
+
       return;
     }
     try {
@@ -45,11 +44,9 @@ export const NotificationsFeedPage: React.FC = () => {
         notification.data.project.id
       );
       await markNotificationAsRead(notification.id);
-      // TODO: Show success toast to user
     } catch (error) {
       console.error("Failed to accept project invitation:", error);
-      // TODO: Show error toast to user
-      // Attempt to mark as read even if accept failed, as the invitation might be desynced/invalid
+
       try {
         await markNotificationAsRead(notification.id);
         console.log(
@@ -70,7 +67,7 @@ export const NotificationsFeedPage: React.FC = () => {
       !notification.data?.invitedUser?.id
     ) {
       console.error("Missing data for declining invitation:", notification);
-      // TODO: Show error toast to user
+
       return;
     }
     try {
@@ -79,11 +76,9 @@ export const NotificationsFeedPage: React.FC = () => {
         notification.data.project.id
       );
       await markNotificationAsRead(notification.id);
-      // TODO: Show success toast to user
     } catch (error) {
       console.error("Failed to decline project invitation:", error);
-      // TODO: Show error toast to user
-      // Attempt to mark as read even if decline failed, as the invitation might be desynced/invalid
+
       try {
         await markNotificationAsRead(notification.id);
         console.log(
@@ -101,10 +96,8 @@ export const NotificationsFeedPage: React.FC = () => {
   const handleMarkAsRead = async (notificationId: number) => {
     try {
       await markNotificationAsRead(notificationId);
-      // TODO: Show success toast to user
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
-      // TODO: Show error toast to user
     }
   };
 
@@ -116,7 +109,7 @@ export const NotificationsFeedPage: React.FC = () => {
     } else if (eventName === "invitation_declined") {
       return "Invitation Declined";
     }
-    // Add more cases for other event names if needed
+
     return eventName
       ? `Notification: ${eventName.replace(/_/g, " ")}`
       : "Notification";

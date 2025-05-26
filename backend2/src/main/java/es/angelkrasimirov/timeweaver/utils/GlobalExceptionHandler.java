@@ -68,20 +68,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
-    // @ExceptionHandler(Exception.class)
-    // public ResponseEntity<Map<String, String>> handleGlobalException(Exception
-    // ex) {
-    // Map<String, String> response = new HashMap<>();
-    // response.put("error", "Internal Server Error");
-    // response.put("message", ex.getMessage());
-    // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex) throws Exception {
         if (ex instanceof org.springframework.security.core.AuthenticationException
                 || ex instanceof org.springframework.security.access.AccessDeniedException) {
-            throw ex; // let fucking Spring security handle these
+            throw ex;
         }
 
         System.err.println("Global exception occurred: " + ex.getClass().getName());
@@ -103,7 +94,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("error", "Data Integrity Violation");
         response.put("message", ex.getMessage());

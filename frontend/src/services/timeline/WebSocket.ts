@@ -5,9 +5,8 @@ import { toWsUrl } from "../../utils/api";
 class TimelineWebSocketService {
   private ws: WebSocket | null = null;
   private projectId: string;
-  private eventsData: DataSet<TimelineWSEvent>; // The vis-timeline DataSet instance
+  private eventsData: DataSet<TimelineWSEvent>;
 
-  // Callbacks for various WebSocket events
   private onConnectedCallback?: () => void;
   private onMessageCallback?: (message: WebSocketMessage) => void;
   private onErrorCallback?: (error: Event) => void;
@@ -59,7 +58,6 @@ class TimelineWebSocketService {
 
         this.onMessageCallback?.(message);
 
-        // Handle direct data manipulation based on message type from server
         switch (message.type) {
           case "initial_data":
             if (Array.isArray(message.payload)) {
@@ -73,7 +71,7 @@ class TimelineWebSocketService {
               );
             }
             break;
-          case "event_added": // Assuming server confirms with 'event_added'
+          case "event_added":
             this.eventsData.add(message.payload as TimelineWSEvent);
             console.log("WebSocket: Event added to DataSet:", message.payload);
             break;
@@ -129,7 +127,7 @@ class TimelineWebSocketService {
       console.log(
         `WebSocket: Disconnected for project ${this.projectId}. Code: ${closeEvent.code}, Reason: ${closeEvent.reason}, Was Clean: ${closeEvent.wasClean}`
       );
-      this.ws = null; // Important to allow reconnection
+      this.ws = null;
       this.onDisconnectedCallback?.(closeEvent);
     };
   }
@@ -145,7 +143,6 @@ class TimelineWebSocketService {
       console.log("WebSocket: Message sent:", message);
     } else {
       console.error("WebSocket: Not connected. Cannot send message:", message);
-      // Optionally, queue messages or attempt to reconnect
     }
   }
 
@@ -185,7 +182,7 @@ class TimelineWebSocketService {
       console.log(
         `WebSocket: Closing connection for project ${this.projectId}`
       );
-      this.ws.close(1000, "Client initiated disconnect"); // Standard close code
+      this.ws.close(1000, "Client initiated disconnect");
     }
   }
 

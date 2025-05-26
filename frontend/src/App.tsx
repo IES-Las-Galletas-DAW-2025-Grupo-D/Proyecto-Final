@@ -1,22 +1,21 @@
 import { Route, Routes } from "react-router";
-import { FullLayout } from "./components/ui/layout/full/FullLayout";
+import { PrivateRoute } from "./components/routes/PrivateRoute";
+import { PublicOnlyRoute } from "./components/routes/PublicOnlyRoute";
+import { DashboardLayout } from "./components/ui/layout/dashboard/DashboardLayout";
 import { FullLayout } from "./components/ui/layout/full/FullLayout";
 import { HomePage } from "./Home/HomePage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
-import { ThemeProvider } from "./providers/ThemeProvider";
+import { NotFoundErrorPage } from "./pages/errors/NotFoundErrorPage";
+import { LoginPage } from "./pages/login/LoginPage";
+import { NotificationsFeedPage } from "./pages/notifications/NotificationsFeedPage";
+import { PaymentConfirmationPage } from "./pages/payment/PaymentConfirmationPage";
+import { ProjectPage } from "./pages/projects/ProjectPage";
+import { ProjectsListPage } from "./pages/projects/ProjectsListPage";
+import { SignupPage } from "./pages/signup/SignupPage";
+import { UpgradePage } from "./pages/upgrade/UpgradePage";
 import { AuthProvider } from "./providers/AuthProvider";
 import { NotificationProvider } from "./providers/NotificationProvider";
-import { ProjectsListPage } from "./pages/projects/ProjectsListPage";
-import { DashboardLayout } from "./components/ui/layout/dashboard/DashboardLayout";
-import { ProjectPage } from "./pages/projects/ProjectPage";
-import { SignupPage } from "./pages/signup/SignupPage";
-import { LoginPage } from "./pages/login/LoginPage";
-import { NotFoundErrorPage } from "./pages/errors/NotFoundErrorPage";
-import { PrivateRoute } from "./components/routes/PrivateRoute";
-import { PublicOnlyRoute } from "./components/routes/PublicOnlyRoute";
-import { PaymentConfirmationPage } from "./pages/payment/PaymentConfirmationPage";
-import { UpgradePage } from "./pages/upgrade/UpgradePage";
-import { NotificationsFeedPage } from "./pages/notifications/NotificationsFeedPage";
+import { ThemeProvider } from "./providers/ThemeProvider";
 
 export function App() {
   return (
@@ -53,8 +52,11 @@ export function App() {
             </Route>
 
             <Route element={<PrivateRoute />}>
-            <Route path="plans" element={<UpgradePage />}></Route>
-            <Route path="/payment/confirmation" element={<PaymentConfirmationPage />} />
+              <Route path="plans" element={<UpgradePage />}></Route>
+              <Route
+                path="/payment/confirmation"
+                element={<PaymentConfirmationPage />}
+              />
               <Route
                 path="dashboard"
                 element={

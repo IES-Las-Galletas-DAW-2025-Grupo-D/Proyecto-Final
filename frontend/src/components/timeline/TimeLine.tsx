@@ -7,7 +7,7 @@ import {
 } from "vis-timeline/standalone";
 import "vis-timeline/styles/vis-timeline-graph2d.css";
 import { TimelineWSEvent, WsMessagePayloadAction } from "../../types/timeline";
-import { debounce } from "../../utils/debounce"; // Import the debounce function
+import { debounce } from "../../utils/debounce";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -33,30 +33,27 @@ export function TimeLine({
   const [selectedItem, setSelectedItem] = useState<TimelineWSEvent | null>(
     null
   );
-  const selectedItemRef = useRef<TimelineWSEvent | null>(null); // Ref to hold the current selectedItem for stable callbacks
+  const selectedItemRef = useRef<TimelineWSEvent | null>(null);
   const [editedContent, setEditedContent] = useState<string>("");
   const [isEditingContent, setIsEditingContent] = useState<boolean>(false);
   const [saveStatus, setSaveStatus] = useState<string>("");
-  const inputRef = useRef<HTMLInputElement | null>(null); // Ref for the input field
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
 
-  // Keep selectedItemRef updated
   useEffect(() => {
     selectedItemRef.current = selectedItem;
   }, [selectedItem]);
 
-  // Define a handler for when the modal is closed by any means (ESC, backdrop, buttons)
   const handleModalClose = () => {
-    setSelectedItem(null); // Clear the selected item, which will hide the modal
+    setSelectedItem(null);
     setIsEditingContent(false);
     setSaveStatus("");
-    setIsPreviewMode(false); // Reset preview mode on modal close
-    // editedContent is reset when a new item is selected or modal is closed
+    setIsPreviewMode(false);
   };
 
   const performSave = useCallback(
     (currentContent: string) => {
-      if (!selectedItemRef.current) return; // Use ref here for consistency, or selectedItem if preferred for this one
+      if (!selectedItemRef.current) return;
 
       const trimmedContent = currentContent.trim();
       if (!trimmedContent) {
@@ -93,7 +90,7 @@ export function TimeLine({
         }, 1500);
       }, 700);
     },
-    [sendTimelineEventToServer] // selectedItem removed, uses selectedItemRef.current
+    [sendTimelineEventToServer]
   );
 
   const debouncedSave = useCallback(debounce(performSave, 1200), [performSave]);
@@ -109,12 +106,12 @@ export function TimeLine({
 
       const baseItem = selectedItemRef.current;
       const updatedEvent: TimelineWSEvent = {
-        ...baseItem, // Spread properties from the item in the ref
-        id: baseItem.id, // Ensure ID is correctly sourced
-        details: detailsContentToSave, // Use the passed-in details
+        ...baseItem,
+        id: baseItem.id,
+        details: detailsContentToSave,
       };
 
-      setSaveStatus("Saving details..."); // Differentiate status message
+      setSaveStatus("Saving details...");
       sendTimelineEventToServer("update", {
         data: updatedEvent,
         timestamp: Date.now(),
@@ -132,13 +129,12 @@ export function TimeLine({
         }, 1500);
       }, 700);
     },
-    [sendTimelineEventToServer] // Dependencies are stable
+    [sendTimelineEventToServer]
   );
 
-  const debouncedSaveDetails = useCallback(
-    debounce(performSaveDetails, 1200),
-    [performSaveDetails] // performSaveDetails is now stable
-  );
+  const debouncedSaveDetails = useCallback(debounce(performSaveDetails, 1200), [
+    performSaveDetails,
+  ]);
 
   const handleEditedContentChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -146,7 +142,6 @@ export function TimeLine({
     const newContent = e.target.value;
     setEditedContent(newContent);
     if (selectedItemRef.current) {
-      // Check ref
       setSaveStatus("");
       debouncedSave(newContent);
     }
@@ -154,14 +149,11 @@ export function TimeLine({
 
   const handleDetailsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newDetails = e.target.value;
-    // Update local state immediately for responsiveness
+
     setSelectedItem((prev) => (prev ? { ...prev, details: newDetails } : null));
-    // selectedItemRef will be updated by its useEffect after this state change.
-    // The debounced function will use the newDetails argument.
 
     if (selectedItemRef.current) {
-      // Check ref to see if an item is active
-      setSaveStatus(""); // Clear previous status on new input
+      setSaveStatus("");
       debouncedSaveDetails(newDetails);
     }
   };
@@ -173,195 +165,175 @@ export function TimeLine({
     }
   }, [isEditingContent]);
 
-  useEffect(
-    () => {
-      let timelineInstance: Timeline | null = null;
+  useEffect(() => {
+    let timelineInstance: Timeline | null = null;
 
-      // Define handlers in the useEffect scope
-      const handleAdd = (
-        _event: string,
-        properties: { items: IdType[] } | null,
-        senderId: IdType | null
-      ) => {
-        if (senderId === SERVER_SENDER_ID) {
-          console.log("TimeLine: Add event ignored, originated from server.");
-          return;
-        }
-        if (properties && properties.items) {
-          properties.items.forEach((itemId) => {
-            const newItemData = eventsData.get(
-              itemId
-            ) as TimelineWSEvent | null;
-            if (newItemData) {
-              const payload = {
-                ...newItemData,
-                content: newItemData.content || `Event ${Date.now()}`,
-              };
-              console.log(
-                "TimeLine: User added item via UI, requesting server add:",
-                payload
-              );
-              sendTimelineEventToServer("add", {
-                data: payload as TimelineWSEvent,
-                timestamp: Date.now(),
-              });
-            }
-          });
-        }
-      };
-
-      const handleUpdate = (
-        _event: string,
-        properties: {
-          items: IdType[];
-          data: Partial<TimelineWSEvent>[];
-        } | null,
-        senderId: IdType | null
-      ) => {
-        if (senderId === SERVER_SENDER_ID) {
-          console.log(
-            "TimeLine: Update event ignored, originated from server."
-          );
-          return;
-        }
-        if (properties && properties.items && properties.data) {
-          properties.items.forEach((itemId) => {
-            const updatedItemData = eventsData.get(
-              itemId
-            ) as TimelineWSEvent | null;
-            if (updatedItemData) {
-              console.log(
-                "TimeLine: User updated item via UI (drag/resize), requesting server update:",
-                updatedItemData
-              );
-              // Ensure data sent includes the ID for the server to identify the item
-              sendTimelineEventToServer("update", {
-                data: updatedItemData as TimelineWSEvent,
-                timestamp: Date.now(),
-              });
-            }
-          });
-        }
-      };
-
-      const handleRemove = (
-        _event: string,
-        properties: { items: IdType[] } | null,
-        senderId: IdType | null
-      ) => {
-        if (senderId === SERVER_SENDER_ID) {
-          console.log(
-            "TimeLine: Remove event ignored, originated from server."
-          );
-          return;
-        }
-        if (properties && properties.items) {
-          properties.items.forEach((itemId) => {
+    const handleAdd = (
+      _event: string,
+      properties: { items: IdType[] } | null,
+      senderId: IdType | null
+    ) => {
+      if (senderId === SERVER_SENDER_ID) {
+        console.log("TimeLine: Add event ignored, originated from server.");
+        return;
+      }
+      if (properties && properties.items) {
+        properties.items.forEach((itemId) => {
+          const newItemData = eventsData.get(itemId) as TimelineWSEvent | null;
+          if (newItemData) {
+            const payload = {
+              ...newItemData,
+              content: newItemData.content || `Event ${Date.now()}`,
+            };
             console.log(
-              "TimeLine: User removed item via UI, requesting server remove, ID:",
-              itemId
+              "TimeLine: User added item via UI, requesting server add:",
+              payload
             );
-            sendTimelineEventToServer("delete", {
-              // For delete, sending just the ID is typical
-              data: { id: itemId } as { id: IdType },
+            sendTimelineEventToServer("add", {
+              data: payload as TimelineWSEvent,
               timestamp: Date.now(),
             });
+          }
+        });
+      }
+    };
+
+    const handleUpdate = (
+      _event: string,
+      properties: {
+        items: IdType[];
+        data: Partial<TimelineWSEvent>[];
+      } | null,
+      senderId: IdType | null
+    ) => {
+      if (senderId === SERVER_SENDER_ID) {
+        console.log("TimeLine: Update event ignored, originated from server.");
+        return;
+      }
+      if (properties && properties.items && properties.data) {
+        properties.items.forEach((itemId) => {
+          const updatedItemData = eventsData.get(
+            itemId
+          ) as TimelineWSEvent | null;
+          if (updatedItemData) {
+            console.log(
+              "TimeLine: User updated item via UI (drag/resize), requesting server update:",
+              updatedItemData
+            );
+
+            sendTimelineEventToServer("update", {
+              data: updatedItemData as TimelineWSEvent,
+              timestamp: Date.now(),
+            });
+          }
+        });
+      }
+    };
+
+    const handleRemove = (
+      _event: string,
+      properties: { items: IdType[] } | null,
+      senderId: IdType | null
+    ) => {
+      if (senderId === SERVER_SENDER_ID) {
+        console.log("TimeLine: Remove event ignored, originated from server.");
+        return;
+      }
+      if (properties && properties.items) {
+        properties.items.forEach((itemId) => {
+          console.log(
+            "TimeLine: User removed item via UI, requesting server remove, ID:",
+            itemId
+          );
+          sendTimelineEventToServer("delete", {
+            data: { id: itemId } as { id: IdType },
+            timestamp: Date.now(),
           });
-        }
-      };
+        });
+      }
+    };
 
-      let previouslySelectedItem: TimelineWSEvent | null = null;
+    let previouslySelectedItem: TimelineWSEvent | null = null;
 
-      const onSelect = ({ items }: { items: IdType[] }) => {
-        if (items.length > 0) {
-          const itemId = items[0];
-          const foundItem = eventsData.get(itemId) as TimelineWSEvent | null;
-          if (foundItem) {
-            setSelectedItem(foundItem);
-            setEditedContent(foundItem.content || "");
-            // Details are directly from foundItem.details in the textarea value
-            setIsEditingContent(false);
-            setSaveStatus("");
-            setIsPreviewMode(false); // Default to edit mode for details when modal opens
+    const onSelect = ({ items }: { items: IdType[] }) => {
+      if (items.length > 0) {
+        const itemId = items[0];
+        const foundItem = eventsData.get(itemId) as TimelineWSEvent | null;
+        if (foundItem) {
+          setSelectedItem(foundItem);
+          setEditedContent(foundItem.content || "");
 
-            if (previouslySelectedItem !== foundItem) {
-              previouslySelectedItem = foundItem;
-              // Do not open modal on first click if it's just selection
-              // Open modal only on second click on the same item, or if modalRef is not open
-              if (modalRef.current && !modalRef.current.open) {
-                // modalRef.current.showModal(); // Delay showing modal to allow double click logic
-              }
-              return;
-            } else {
-              previouslySelectedItem = null; // Reset for next selection
-            }
+          setIsEditingContent(false);
+          setSaveStatus("");
+          setIsPreviewMode(false);
+
+          if (previouslySelectedItem !== foundItem) {
+            previouslySelectedItem = foundItem;
 
             if (modalRef.current && !modalRef.current.open) {
-              modalRef.current.showModal();
             }
+            return;
           } else {
-            if (modalRef.current?.open) modalRef.current.close();
-            else setSelectedItem(null); // Ensures selectedItemRef becomes null
+            previouslySelectedItem = null;
+          }
+
+          if (modalRef.current && !modalRef.current.open) {
+            modalRef.current.showModal();
           }
         } else {
-          if (modalRef.current?.open) {
-            modalRef.current.close();
-          } else {
-            setSelectedItem(null); // Ensures selectedItemRef becomes null
-          }
+          if (modalRef.current?.open) modalRef.current.close();
+          else setSelectedItem(null);
         }
-      };
-
-      if (refContainer.current && eventsData && !timelineRef.current) {
-        const options: TimelineOptions = {
-          selectable: true,
-          editable: {
-            add: true,
-            updateTime: true,
-            updateGroup: false,
-            remove: true,
-          },
-          locale: "en",
-        };
-
-        timelineInstance = new Timeline(
-          refContainer.current,
-          eventsData,
-          options
-        );
-        timelineRef.current = timelineInstance;
-
-        timelineInstance.on("select", onSelect);
-        eventsData.on("add", handleAdd);
-        eventsData.on("update", handleUpdate);
-        eventsData.on("remove", handleRemove);
-
-        console.log("Timeline initialized for project:", projectId);
+      } else {
+        if (modalRef.current?.open) {
+          modalRef.current.close();
+        } else {
+          setSelectedItem(null);
+        }
       }
+    };
 
-      return () => {
-        if (timelineRef.current) {
-          eventsData.off("add", handleAdd);
-          eventsData.off("update", handleUpdate);
-          eventsData.off("remove", handleRemove);
-          // timelineRef.current.off("select", onSelect); // Not strictly needed if destroying
-          timelineRef.current.destroy();
-          timelineRef.current = null;
-          console.log("Timeline destroyed for project:", projectId);
-        }
-        debouncedSave.cancel?.();
-        debouncedSaveDetails.cancel?.(); // Cancel pending details saves
+    if (refContainer.current && eventsData && !timelineRef.current) {
+      const options: TimelineOptions = {
+        selectable: true,
+        editable: {
+          add: true,
+          updateTime: true,
+          updateGroup: false,
+          remove: true,
+        },
+        locale: "en",
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    [
-      eventsData,
-      projectId,
-      sendTimelineEventToServer,
-      debouncedSave,
-      debouncedSaveDetails,
-    ] // Added all relevant stable dependencies
-  );
+
+      timelineInstance = new Timeline(
+        refContainer.current,
+        eventsData,
+        options
+      );
+      timelineRef.current = timelineInstance;
+
+      timelineInstance.on("select", onSelect);
+      eventsData.on("add", handleAdd);
+      eventsData.on("update", handleUpdate);
+      eventsData.on("remove", handleRemove);
+
+      console.log("Timeline initialized for project:", projectId);
+    }
+
+    return () => {
+      if (timelineRef.current) {
+        eventsData.off("add", handleAdd);
+        eventsData.off("update", handleUpdate);
+        eventsData.off("remove", handleRemove);
+
+        timelineRef.current.destroy();
+        timelineRef.current = null;
+        console.log("Timeline destroyed for project:", projectId);
+      }
+      debouncedSave.cancel?.();
+      debouncedSaveDetails.cancel?.();
+    };
+  }, []);
 
   return (
     <div className="w-full h-[300px]">

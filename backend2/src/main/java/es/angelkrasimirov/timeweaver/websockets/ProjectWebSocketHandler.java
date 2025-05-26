@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.angelkrasimirov.timeweaver.dtos.WebSocketMessage;
 import es.angelkrasimirov.timeweaver.models.Event;
 import es.angelkrasimirov.timeweaver.models.Project;
-import es.angelkrasimirov.timeweaver.models.User; // Assuming User model exists
+import es.angelkrasimirov.timeweaver.models.User;
 import es.angelkrasimirov.timeweaver.repositories.EventRepository;
-// import es.angelkrasimirov.timeweaver.repositories.UserRepository; // If you need to fetch User entity by username
+// import es.angelkrasimirov.timeweaver.repositories.UserRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.HashMap; // For creating mutable maps
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -33,17 +33,13 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
   private static final Logger logger = LoggerFactory.getLogger(ProjectWebSocketHandler.class);
   private final ObjectMapper objectMapper;
   private final EventRepository eventRepository;
-  // private final UserRepository userRepository; // Inject if needed
 
   private final ConcurrentHashMap<Long, ConcurrentHashMap<String, WebSocketSession>> projectSessions = new ConcurrentHashMap<>();
 
-  public ProjectWebSocketHandler(ObjectMapper objectMapper, EventRepository eventRepository /*
-                                                                                             * , UserRepository
-                                                                                             * userRepository
-                                                                                             */) {
+  public ProjectWebSocketHandler(ObjectMapper objectMapper, EventRepository eventRepository) {
     this.objectMapper = objectMapper;
     this.eventRepository = eventRepository;
-    // this.userRepository = userRepository;
+
   }
 
   @Override
@@ -58,56 +54,46 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
 
       logger.info("WebSocket connection established for user {} in project {}", username, projectId);
 
-      // Fetch existing events for the project
       List<Event> projectEventEntities = eventRepository.findByProjectId(projectId);
       List<Map<String, Object>> projectEventsPayloads = projectEventEntities.stream()
           .map(eventEntity -> {
-            Map<String, Object> eventContent = new HashMap<>(); // Initialize as mutable map
+            Map<String, Object> eventContent = new HashMap<>();
             String jsonData = eventEntity.getData();
 
             if (jsonData != null && !jsonData.trim().isEmpty()) {
               try {
-                // Deserialize the 'data' string from Event entity
+
                 eventContent = objectMapper.readValue(jsonData,
                     new TypeReference<Map<String, Object>>() {
                     });
               } catch (IOException e) {
                 logger.error("Error deserializing event data for event ID {}: {}. Raw data: '{}'",
                     eventEntity.getId(), e.getMessage(), jsonData, e);
-                return null; // This event will be filtered out by .filter(Objects::nonNull)
+                return null;
               }
             } else {
               if (jsonData == null) {
                 logger.warn("Event data is null for event ID {}. Sending event with ID and empty data.",
                     eventEntity.getId());
-              } else { // jsonData is empty or whitespace
+              } else {
                 logger.warn("Event data is blank for event ID {}. Sending event with ID and empty data.",
                     eventEntity.getId());
               }
-              // eventContent is already an empty HashMap, which is appropriate here.
+
             }
 
-            // Add the database ID to this map, as it's crucial for client-side
-            // identification.
-            // This ensures 'id' is present even if 'data' was null/empty.
             eventContent.put("id", eventEntity.getId());
 
-            // Optionally, include user information if needed and not already in
-            // eventContent
-            // if (eventEntity.getUser() != null && eventContent.get("userId") == null) {
-            // eventContent.put("userId", eventEntity.getUser().getId());
-            // }
-            return eventContent; // Return the map
+            return eventContent;
           })
-          .filter(Objects::nonNull) // Filters out events where deserialization failed (returned null)
+          .filter(Objects::nonNull)
           .collect(Collectors.toList());
 
       WebSocketMessage connectionSuccessMessage = new WebSocketMessage("connection_success", Map.of(
           "projectId", projectId,
           "username", username,
           "activeUsers", getActiveUsers(projectId),
-          "projectEvents", projectEventsPayloads // Send all existing events (deserialized data)
-      ));
+          "projectEvents", projectEventsPayloads));
 
       sendMessage(session, connectionSuccessMessage);
 
@@ -149,16 +135,15 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
             new WebSocketMessage("error", Map.of("message", "Invalid data format in message (outer data)")));
         return;
       }
-      // eventDataMap from your log: {data={start=..., content=..., id=...},
-      // timestamp=...}
+
       Map<String, Object> eventDataMap = (Map<String, Object>) rawOuterData;
 
-      Map<String, Object> innerEventData; // This will hold the actual event attributes {id, start, content ...}
+      Map<String, Object> innerEventData;
       Object rawInnerData = eventDataMap.get("data");
 
-      if ("delete".equals(type)) { // For delete, the ID might be directly in eventDataMap or nested
+      if ("delete".equals(type)) {
         if (eventDataMap.containsKey("id")) {
-          innerEventData = eventDataMap; // ID is directly in the outer data payload
+          innerEventData = eventDataMap;
         } else if (rawInnerData instanceof Map) {
           innerEventData = (Map<String, Object>) rawInnerData;
         } else {
@@ -167,7 +152,7 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
           sendMessage(session, new WebSocketMessage("error", Map.of("message", "Event ID missing for delete.")));
           return;
         }
-      } else { // For add/update, expect data to be nested
+      } else {
         if (!(rawInnerData instanceof Map)) {
           logger.warn("Received inner event data field is not a Map: {}. Outer data: {}", rawInnerData, eventDataMap);
           sendMessage(session, new WebSocketMessage("error", Map.of("message", "Invalid event data structure.")));
@@ -190,25 +175,16 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
           String newEventId = (String) innerEventData.get("id");
 
           Event newEvent = new Event();
-          newEvent.setId(newEventId); // Set frontend-generated ID
+          newEvent.setId(newEventId);
 
           Project projectRefAdd = new Project();
           projectRefAdd.setId(projectId);
           newEvent.setProject(projectRefAdd);
 
-          // Optional: Set User based on senderUsername
-          // User userRefAdd = userRepository.findByUsername(senderUsername).orElse(null);
-          // if (userRefAdd != null) { newEvent.setUser(userRefAdd); }
-
           newEvent.setData(objectMapper.writeValueAsString(innerEventData));
           Event savedEvent = eventRepository.save(newEvent);
 
-          // For broadcasting, use the innerEventData which already contains the ID and
-          // all fields
-          eventContentForBroadcast = new HashMap<>(innerEventData); // Create a mutable copy if needed
-          // Ensure the ID from the saved entity (should be the same) is used, or just
-          // rely on innerEventData.
-          // eventContentForBroadcast.put("id", savedEvent.getId());
+          eventContentForBroadcast = new HashMap<>(innerEventData);
 
           broadcastToProject(projectId, senderUsername,
               new WebSocketMessage(type, Map.of("data", eventContentForBroadcast, "username", senderUsername)));
@@ -244,13 +220,10 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
             Project projectRefUpdate = new Project();
             projectRefUpdate.setId(projectId);
             eventToUpdate.setProject(projectRefUpdate);
-            // User handling if necessary
 
             Event updatedEvent = eventRepository.save(eventToUpdate);
 
-            // For broadcasting, use innerEventData
             eventContentForBroadcast = new HashMap<>(innerEventData);
-            // eventContentForBroadcast.put("id", updatedEvent.getId());
 
             broadcastToProject(projectId, senderUsername,
                 new WebSocketMessage(type, Map.of("data", eventContentForBroadcast, "username", senderUsername)));
@@ -290,10 +263,7 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
           break;
         default:
           logger.warn("Unknown event type received from user {}: {}", senderUsername, type);
-          // Example: broadcast unknown types without persistence if desired
-          // WebSocketMessage unknownTypeMessage = new WebSocketMessage(type,
-          // Map.of("data", eventDataMap, "username", senderUsername));
-          // broadcastToProject(projectId, senderUsername, unknownTypeMessage);
+
           break;
       }
     } catch (Exception e) {
@@ -306,13 +276,8 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
     ConcurrentHashMap<String, WebSocketSession> sessions = projectSessions.get(projectId);
     if (sessions != null) {
       sessions.forEach((username, session) -> {
-        // Broadcast to others, not the sender for add/update/delete actions
-        // if (!username.equals(senderUsername) && session.isOpen()) {
-        // For project events, usually, everyone including the sender might want to see
-        // the persisted state.
-        // If sender should be excluded for some messages, use: if
-        // (!username.equals(senderUsername) && session.isOpen())
-        if (session.isOpen()) { // Send to all, including sender, to confirm action and sync state
+
+        if (session.isOpen()) {
           try {
             sendMessage(session, message);
           } catch (Exception e) {
@@ -367,7 +332,7 @@ public class ProjectWebSocketHandler extends TextWebSocketHandler {
           WebSocketMessage userLeftMessage = new WebSocketMessage("user_left", Map.of(
               "username", username,
               "activeUsers", getActiveUsers(projectId)));
-          // Send to all remaining users in the project
+
           broadcastToAllInProject(projectId, userLeftMessage);
         }
       }

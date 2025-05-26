@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { useAuth } from "./AuthProvider";
-import { Notification } from "../types/notification"; // Ensure this path is correct
-import { toApiUrl } from "../utils/api"; // Ensure this path is correct
+import { Notification } from "../types/notification";
+import { toApiUrl } from "../utils/api";
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -116,14 +116,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         console.log("EventSource connection opened.");
       };
 
-      // General message handler (for messages without a specific event name)
       eventSourceInstanceInThisEffect.onmessage = (event) => {
         console.log("Generic SSE message received (onmessage):", event.data);
-        // Decide if you want to process these as notifications too, or if they are for other purposes.
-        // handleNotificationData(event.data, 'generic onmessage');
       };
-
-      // Specific event listeners
 
       eventSourceInstanceInThisEffect.addEventListener(
         "project_invitation",

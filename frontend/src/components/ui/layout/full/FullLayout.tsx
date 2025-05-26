@@ -1,3 +1,4 @@
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 
 export function FullLayout({ children }: { children: React.ReactNode }) {
@@ -7,12 +8,12 @@ export function FullLayout({ children }: { children: React.ReactNode }) {
         <div className="bg-base-200 py-6 px-9">
           <Header />
           <div className="place-items-center justify-center items-center min-h-screen">
-          {children}
+            {children}
           </div>
         </div>
       </div>
 
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 }

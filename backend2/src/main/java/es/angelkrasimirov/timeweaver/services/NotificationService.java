@@ -64,7 +64,7 @@ public class NotificationService {
     userConnections.put(emitterId, new Connection(emitter));
 
     try {
-      // Send a connection confirmation event, could also be a DTO if needed
+
       emitter.send(SseEmitter.event()
           .name("connect")
           .data(Map.of(
@@ -121,35 +121,30 @@ public class NotificationService {
       logger.info("Notification persisted for user: {}, event: {}", username, eventName);
     } catch (Exception e) {
       logger.error("Error persisting notification for user {}: {}", username, e.getMessage(), e);
-      // Depending on requirements, you might choose not to send SSE if persistence
-      // fails
-      // or send an error DTO. For now, we'll proceed if savedNotification is null.
+
     }
 
     Map<String, Connection> userConnections = emitters.get(username);
     if (userConnections != null && !userConnections.isEmpty()) {
       Set<String> deadEmitterIds = ConcurrentHashMap.newKeySet();
 
-      // Prepare DTO for SSE. Use original 'data' object.
       NotificationResponseDto sseDto;
       if (savedNotification != null) {
         sseDto = new NotificationResponseDto(
             savedNotification.getId(),
             savedNotification.getUsername(),
             savedNotification.getEventName(),
-            data, // Original data object
+            data,
             savedNotification.getTimestamp(),
             savedNotification.isReadStatus());
       } else {
-        // Fallback if persistence failed but we still want to send an SSE
-        // This DTO will have null ID and potentially different timestamp if persistence
-        // took time
+
         sseDto = new NotificationResponseDto(
             null,
             username,
             eventName,
-            data, // Original data object
-            LocalDateTime.now(), // Current time as fallback
+            data,
+            LocalDateTime.now(),
             false);
         logger.warn("Sending SSE for user {} event {} without persisted ID due to prior error.", username, eventName);
       }
@@ -157,8 +152,8 @@ public class NotificationService {
       userConnections.forEach((emitterId, connection) -> {
         try {
           connection.emitter.send(SseEmitter.event()
-              .name(eventName) // Use specific event name
-              .data(sseDto)); // Send the DTO
+              .name(eventName)
+              .data(sseDto));
         } catch (IOException e) {
           logger.error("Error sending SSE event to user {}, emitterId {}: {}",
               username, emitterId, e.getMessage());
@@ -171,15 +166,14 @@ public class NotificationService {
   }
 
   public void sendNotificationToAll(String eventName, Object data) {
-    // For broadcast, we create a DTO that isn't tied to a persisted entity ID
+
     NotificationResponseDto broadcastDto = new NotificationResponseDto(
-        null, // No specific ID for a broadcast message
-        "broadcast", // Or null, or a specific system username
+        null,
+        "broadcast",
         eventName,
-        data, // The original data object
+        data,
         LocalDateTime.now(),
-        false
-    );
+        false);
 
     emitters.forEach((username, userConnections) -> {
       Set<String> deadEmitterIds = ConcurrentHashMap.newKeySet();
@@ -225,13 +219,12 @@ public class NotificationService {
     Object deserializedData = null;
     if (notification.getData() != null && !notification.getData().isEmpty()) {
       try {
-        // Attempt to parse as a generic Object, Jackson will determine if it's a map,
-        // list, etc.
+
         deserializedData = objectMapper.readValue(notification.getData(), Object.class);
       } catch (JsonProcessingException e) {
         logger.warn("Failed to parse notification data as JSON for notification id {}. Returning raw string. Error: {}",
             notification.getId(), e.getMessage());
-        deserializedData = notification.getData(); // Fallback to raw string if parsing fails
+        deserializedData = notification.getData();
       }
     }
     return new NotificationResponseDto(
@@ -252,7 +245,7 @@ public class NotificationService {
           notification.getUsername());
       throw new SecurityException("User does not have permission to mark this notification as read.");
     }
-    // As per previous implementation: "remove it"
+
     notificationRepository.deleteById(notificationId);
     logger.info("Notification {} removed for user {}", notificationId, username);
   }

@@ -28,4 +28,14 @@ public class ProjectService {
   public void deleteProject(Long projectId) {
     projectRepository.deleteById(projectId);
   }
+
+  public Project updateProject(Long projectId, Project projectDetails) {
+    Project existingProject = getProjectById(projectId);
+    if (existingProject == null) {
+      return null;
+    }
+    existingProject.setName(projectDetails.getName());
+    existingProject.setDescription(projectDetails.getDescription());
+    return projectRepository.save(existingProject);
+  }
 }

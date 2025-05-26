@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "events")
 public class Event {
     @Id
-    private String id; // Changed to String
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
@@ -27,9 +27,9 @@ public class Event {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Lob // Specifies that this is a large object
-    @Column(name = "event_data", columnDefinition = "TEXT") // Store as TEXT in the database
-    private String data; // Will store the JSON string of the event data
+    @Lob
+    @Column(name = "event_data", columnDefinition = "TEXT")
+    private String data;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Conversation> conversations = new ArrayList<>();
@@ -37,18 +37,17 @@ public class Event {
     public Event() {
     }
 
-    // Constructor can be simplified or primarily use setters
     public Event(Project project, User user, String data) {
         this.project = project;
         this.user = user;
         this.data = data;
     }
 
-    public String getId() { // Changed to String
+    public String getId() {
         return id;
     }
 
-    public void setId(String id) { // Added setter for String ID
+    public void setId(String id) {
         this.id = id;
     }
 

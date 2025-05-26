@@ -1,5 +1,5 @@
 import { toApiUrl, fetchWithAuth } from "../utils/api";
-import Stripe from 'stripe';
+import Stripe from "stripe";
 import { useEffect } from "react";
 
 export interface StripeCheckoutResponse {
@@ -15,7 +15,6 @@ export interface StripeCheckoutResponse {
   confirmed: boolean;
 }
 
-
 export interface SubscriptionRoleDto {
   userId: number;
   subscriptionType: string;
@@ -29,17 +28,21 @@ export class SubscriptionService {
   /**
    * Get checkout session details from Stripe
    */
-  static async getCheckoutSessionDetails(sessionId: string): Promise<StripeCheckoutResponse> {
+  static async getCheckoutSessionDetails(
+    sessionId: string
+  ): Promise<StripeCheckoutResponse> {
     try {
-      const response = await fetchWithAuth(toApiUrl(`/stripe/checkout-session?sessionId=${sessionId}`));
-      console.log('Response from Stripe API:', response);
+      const response = await fetchWithAuth(
+        toApiUrl(`/stripe/checkout-session?sessionId=${sessionId}`)
+      );
+      console.log("Response from Stripe API:", response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching checkout session details:', error);
+      console.error("Error fetching checkout session details:", error);
       throw error;
     }
   }
@@ -47,23 +50,31 @@ export class SubscriptionService {
   /**
    * Assign subscription role to user after successful payment
    */
-  static async assignSubscriptionRole(userId: number, subscriptionData: SubscriptionRoleDto): Promise<string> {
+  static async assignSubscriptionRole(
+    userId: number,
+    subscriptionData: SubscriptionRoleDto
+  ): Promise<string> {
     try {
-      const response = await fetchWithAuth(toApiUrl(`/users/${userId}/subscription`), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(subscriptionData),
-      });
+      const response = await fetchWithAuth(
+        toApiUrl(`/users/${userId}/subscription`),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(subscriptionData),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`Failed to assign subscription role: ${response.status}`);
+        throw new Error(
+          `Failed to assign subscription role: ${response.status}`
+        );
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error assigning subscription role:', error);
+      console.error("Error assigning subscription role:", error);
       throw error;
     }
   }
@@ -71,39 +82,49 @@ export class SubscriptionService {
   /**
    * Process payment confirmation - get session details and assign role
    */
-  static async processPaymentConfirmation(sessionId: string, userId: number): Promise<{
+  static async processPaymentConfirmation(
+    sessionId: string,
+    userId: number
+  ): Promise<{
     sessionDetails: StripeCheckoutResponse;
     updatedUser: string;
   }> {
     try {
-      console.log('Processing payment confirmation for session ID:', sessionId, 'and user ID:', userId);
-      // First, get the checkout session details
+      console.log(
+        "Processing payment confirmation for session ID:",
+        sessionId,
+        "and user ID:",
+        userId
+      );
+
       const sessionDetails = await this.getCheckoutSessionDetails(sessionId);
-      console.log('Session details:', sessionDetails);
+      console.log("Session details:", sessionDetails);
       if (!sessionDetails.confirmed) {
-        throw new Error('Payment not confirmed');
+        throw new Error("Payment not confirmed");
       }
 
-      // Map price ID to subscription type
-      const subscriptionType = this.getSubscriptionTypeFromPriceId(sessionDetails.priceId);
+      const subscriptionType = this.getSubscriptionTypeFromPriceId(
+        sessionDetails.priceId
+      );
 
-      // Prepare subscription data
       const subscriptionData: SubscriptionRoleDto = {
         userId,
         subscriptionType,
         stripeCustomerId: sessionDetails.customerId,
-        stripeSubscriptionId: sessionDetails.subscriptionId
+        stripeSubscriptionId: sessionDetails.subscriptionId,
       };
 
-      // Assign the subscription role
-      const updatedUser = await this.assignSubscriptionRole(userId, subscriptionData);
+      const updatedUser = await this.assignSubscriptionRole(
+        userId,
+        subscriptionData
+      );
 
       return {
         sessionDetails,
-        updatedUser
+        updatedUser,
       };
     } catch (error) {
-      console.error('Error processing payment confirmation:', error);
+      console.error("Error processing payment confirmation:", error);
       throw error;
     }
   }
@@ -116,35 +137,38 @@ export class SubscriptionService {
     }
 
     try {
-      const response = await fetch(toApiUrl('/stripe/token'));
-      console.log('Response from Stripe token API:', response);
+      const response = await fetch(toApiUrl("/stripe/token"));
+      console.log("Response from Stripe token API:", response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const token = await response.text();
-      this.stripeTokenCache = token; // Cache for future use
+      this.stripeTokenCache = token;
       return token;
     } catch (error) {
-      console.error('Error fetching Stripe token:', error);
+      console.error("Error fetching Stripe token:", error);
       throw error;
     }
   }
   static async getProductPrice(): Promise<{ [key: string]: string }> {
-    if (this.productPriceCache && Object.keys(this.productPriceCache).length > 0) {
+    if (
+      this.productPriceCache &&
+      Object.keys(this.productPriceCache).length > 0
+    ) {
       return this.productPriceCache;
     }
 
     try {
-      const response = await fetch(toApiUrl('/stripe/products'));
-      console.log('Response from Stripe products API:', response);
+      const response = await fetch(toApiUrl("/stripe/products"));
+      console.log("Response from Stripe products API:", response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const prices = await response.json();
-      this.productPriceCache = prices; // Cache for future use
+      this.productPriceCache = prices;
       return prices;
     } catch (error) {
-      console.error('Error fetching product prices:', error);
+      console.error("Error fetching product prices:", error);
       throw error;
     }
   }
@@ -154,10 +178,10 @@ export class SubscriptionService {
    * You'll need to configure these price IDs to match your Stripe setup
    */
   private static getSubscriptionTypeFromPriceId(priceId: string): string {
-    if (priceId === this.productPriceCache['intermediatePriceId']) {
-      return 'intermediate';
-    } else if (priceId === this.productPriceCache['businessPriceId']) {
-      return 'business';
+    if (priceId === this.productPriceCache["intermediatePriceId"]) {
+      return "intermediate";
+    } else if (priceId === this.productPriceCache["businessPriceId"]) {
+      return "business";
     } else {
       throw new Error(`Unknown price ID: ${priceId}`);
     }
@@ -165,37 +189,39 @@ export class SubscriptionService {
   /**
    * Create checkout session directly using Stripe API
    */
-  static async createCheckoutSession(priceId: string): Promise<{ url: string }> {
+  static async createCheckoutSession(
+    priceId: string
+  ): Promise<{ url: string }> {
     try {
       if (!priceId) {
-        throw new Error('Price ID is required to create a checkout session');
+        throw new Error("Price ID is required to create a checkout session");
       }
       const price = await this.getProductPrice();
       const token = await this.getStripeToken();
       const stripe = new Stripe(this.stripeTokenCache || token);
 
-      console.log('Creating checkout session with price ID:', priceId);
-      console.log('Using product prices:', this.productPriceCache);
+      console.log("Creating checkout session with price ID:", priceId);
+      console.log("Using product prices:", this.productPriceCache);
       const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
+        payment_method_types: ["card"],
         line_items: [
           {
             price: this.productPriceCache[priceId] || priceId,
             quantity: 1,
           },
         ],
-        mode: 'subscription',
+        mode: "subscription",
         success_url: `http://localhost:3000/payment/confirmation?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `http://localhost:3000/cancel`,
       });
 
       if (!session.url) {
-        throw new Error('Failed to create checkout session URL');
+        throw new Error("Failed to create checkout session URL");
       }
 
       return { url: session.url };
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error("Error creating checkout session:", error);
       throw error;
     }
   }

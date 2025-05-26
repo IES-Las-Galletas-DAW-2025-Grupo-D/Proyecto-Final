@@ -36,7 +36,6 @@ export function InviteUserForm({
     { value: ProjectRole.ROLE_PROJECT_MANAGER, label: "Manager" },
   ];
 
-  // Debounced search function
   const searchUser = debounce(async (query: string) => {
     if (!query || query.length < 3) {
       setSearchResults([]);
@@ -55,7 +54,6 @@ export function InviteUserForm({
     }
   }, 500);
 
-  // Effect for search input changes
   useEffect(() => {
     if (username && !selectedUser) {
       searchUser(username);
@@ -98,7 +96,6 @@ export function InviteUserForm({
         onInviteSuccess();
       }
 
-      // Close the modal after a short delay
       setTimeout(() => {
         setSuccess(false);
         closeModal();
@@ -120,7 +117,7 @@ export function InviteUserForm({
     if (modalRef.current) {
       modalRef.current.close();
     }
-    // Reset form state
+
     setUsername("");
     setSelectedUser(null);
     setSelectedRole(ProjectRole.ROLE_PROJECT_VIEWER);
